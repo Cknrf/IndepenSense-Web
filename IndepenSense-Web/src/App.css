@@ -9,6 +9,14 @@
 
 }
 
+.section {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+}
+
 .header {
     height: 8%;
     width: 100%;
@@ -17,7 +25,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
 }
 
 .main-interface {
@@ -56,15 +63,6 @@
 
 
 /* Home Section Interface */
-
-
-.main-interface .home-section {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    padding: 2rem;
-}
 
 .home-section .stack-container:nth-child(1) {
     height: 15%;
@@ -123,7 +121,7 @@
     color: blue !important;
 }
 
-.stack-child-container {
+.home-section .stack-child-container {
     height: 45%;
     width: 100%;
     display: flex;
@@ -191,9 +189,105 @@
     align-items: center;
     border: 1px solid grey;
     border-radius: 1.5rem;
-
-
 }
+
+
+/* Location Section */
+.main-interface .location-section {
+    background-color: transparent;
+    
+}
+
+.main-interface .home-section {
+    display: none;
+}
+
+.location-section .stack-container:nth-child(1) {
+    height: 7%;
+}
+
+.location-section .message-container {
+    height: 100%; 
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.location-section .message-container svg {
+    color: green;
+    font-size: 2rem;
+}
+
+.location-section .message-container h2 {
+    display: inline-flex;
+    font-size: 1.5rem;
+}
+
+.location-section .stack-container:nth-child(2) {
+    height: 93%;
+    width: 100%;
+   
+}
+
+.location-section .stack-container:nth-child(2) .stack-child-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background-color: #1C222F;
+    border: 1px solid #343131;
+    border-radius: 1.5rem;
+    gap: none;
+}
+
+.location-section .stack-container:nth-child(2) .stack-child-container .map-header {
+    height: 10%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    color: white;
+    padding: 1rem;
+}
+
+.location-section .stack-container:nth-child(2) .map-container {
+    height: 90%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+    background-color: rgb(206, 195, 195);
+    border-radius: 1.5rem;
+}
+
+.location-section .stack-container:nth-child(2) .message-banner-container {
+    height: 5rem;
+    width: 80%;
+    color: white;
+    padding: .5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: absolute;
+    bottom: 2rem;
+    right: 50%;
+    transform: translateX(50%);
+    background-color: #343945;
+    border: 1px solid #343131;
+    border-radius: 1.5rem;
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
