@@ -274,17 +274,6 @@
 
 /* Contacts Section */
 
-.main-interface .location-section {
-    display: none;
-}
-
-.main-interface .home-section {
-    display: none;
-}
-
-.main-interface .contact-section {
-}
-
 .contact-section .stack-container:nth-child(1) {
     height: 10%;
     width: 100%;
@@ -457,6 +446,18 @@
 
 
 
+
+.main-interface .location-section {
+    display: none;
+}
+
+.main-interface .home-section {
+}
+
+.main-interface .contact-section {
+    display: none;
+
+}
 
 
 
