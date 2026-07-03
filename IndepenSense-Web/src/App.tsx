@@ -1,7 +1,8 @@
 import './App.css'
 import HomeSection from './components/Home/HomeSection'
-import ContactSection from './components/Contacts/ContactSection';
+import AlertSection from './components/Alert/AlertSection';
 import LocationSection from './components/Location/LocationSection';
+import ContactSection from './components/Contacts/ContactSection';
 import {useEffect, useState} from "react";
 
 
@@ -18,7 +19,7 @@ function App() {
 
 
     const [intervalInformation, setIntervalInformation] = useState<IntervalInformation>();
-    const [activeSection, setActiveSection] = useState("HomeSection");
+    const [activeSection, setActiveSection] = useState("AlertSection");
 
     useEffect(() => {
 
@@ -33,17 +34,32 @@ function App() {
         return () => clearInterval(intervalID);
     }, []);
 
+
+    let header = "";
+
+    if(activeSection === "HomeSection"){
+      header = "Home";
+    } else if(activeSection === "AlertSection"){
+      header = "Alert";
+    } else if(activeSection === "LocationSection"){
+      header = "Location";
+    } else {
+      header = "Contact";
+    }
+
   return (
     <div className="main-container">
         <header className="header">
-            <h2>Location</h2>
+            <h2>
+            {header}
+            </h2>
         </header>
 
 {/*  Main Section Interface */}
         <div className="main-interface">
 
-          {/* Home Section */}
 
+          {/* Home Section */}
 
           {!intervalInformation && (
               <span>Unable To Retrieve Information</span>
@@ -52,6 +68,15 @@ function App() {
           {intervalInformation && activeSection === "HomeSection" && (
           <HomeSection {...intervalInformation}
           ></HomeSection>
+          )}
+
+
+          {/* Alert Section */}
+
+          {activeSection === "LocationSection" && (
+            <AlertSection>
+              
+            </AlertSection>
           )}
 
           {/* Location Section */}
