@@ -73,7 +73,7 @@ function App() {
 
           {/* Alert Section */}
 
-          {activeSection === "LocationSection" && (
+          {activeSection === "AlertSection" && (
             <AlertSection>
               
             </AlertSection>
