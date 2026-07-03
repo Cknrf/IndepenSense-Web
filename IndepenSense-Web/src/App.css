@@ -191,6 +191,11 @@
     border-radius: 1.5rem;
 }
 
+.home-section .stack-container:nth-child(3) .maps-container {
+    height: 100%;
+    width: 100%;
+}
+
 
 /* Location Section */
 

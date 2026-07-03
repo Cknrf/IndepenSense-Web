@@ -1,6 +1,7 @@
 import BatteryHealth from "./BatteryHealth"
 import LocationBox from "./LocationBox"
 import ConnectivityStatus from "./ConnectivityStatus";
+import MapBox from "./MapBox";
 import { useState, useEffect } from "react";
 
 type IntervalInformation = {
@@ -8,6 +9,7 @@ type IntervalInformation = {
     internetStatus: number,
     latitude: number,
     longitude: number, 
+    location: string
 }
 
 function HomeSection() {
@@ -111,10 +113,19 @@ function HomeSection() {
             </div>
 
             <div className="stack-container">
-                <div className="maps-container">
+                <MapBox
+                latitude={
+                  intervalInformation ? intervalInformation.latitude : 0
+                }
 
-                </div>
+                longitude={
+                  intervalInformation ? intervalInformation.longitude : 0
+                }
 
+                location={
+                  intervalInformation ? intervalInformation.location : "error"
+                }
+                ></MapBox>
             </div>
 
 
