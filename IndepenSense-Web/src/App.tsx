@@ -33,16 +33,6 @@ function App() {
         return () => clearInterval(intervalID);
     }, []);
 
-    useEffect(() => {
-      
-
-
-
-    })
-
-
-    
-
   return (
     <div className="main-container">
         <header className="header">
@@ -54,31 +44,32 @@ function App() {
 
           {/* Home Section */}
 
-          {intervalInformation ?  
+
+          {!intervalInformation && (
+              <span>Unable To Retrieve Information</span>
+          )}
+
+          {intervalInformation && activeSection === "HomeSection" && (
           <HomeSection {...intervalInformation}
           ></HomeSection>
-          :
-          <span>Unable To Retrieve Information</span>
-          } 
-         
-
+          )}
 
           {/* Location Section */}
 
-          {intervalInformation ? 
-          <LocationSection 
+          {intervalInformation && activeSection === "LocationSection" && (
+          <LocationSection
           {...intervalInformation}
           ></LocationSection>
-          :
-          <span>Unable To Retrieve Information</span>
-        }
-         
+          )}
+
 
           {/* Contact Section */}
 
+          {activeSection === "ContactSection" && (
           <ContactSection>
             
           </ContactSection>
+          )}
          
 
         </div>
@@ -86,7 +77,7 @@ function App() {
 
         <footer className="footer">
             {/* Home Icon*/}
-            <div>
+            <div onClick={() => setActiveSection("HomeSection")}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
 	                <path d="M0 0h24v24H0z" fill="none" />
 	                <path fill="currentColor" d="M4 19v-9q0-.475.213-.9t.587-.7l6-4.5q.525-.4 1.2-.4t1.2.4l6 4.5q.375.275.588.7T20 10v9q0 .825-.588 1.413T18 21h-3q-.425 0-.712-.288T14 20v-5q0-.425-.288-.712T13 14h-2q-.425 0-.712.288T10 15v5q0 .425-.288.713T9 21H6q-.825 0-1.412-.587T4 19" />
@@ -95,7 +86,7 @@ function App() {
 
             </div>
             {/* Alert Icon*/}
-            <div>
+            <div onClick={() => setActiveSection("AlertSection")}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
                   <path d="M0 0h24v24H0z" fill="none" />
                   <path fill="currentColor" d="M13 14h-2V9h2m0 9h-2v-2h2M1 21h22L12 2z" />
@@ -103,8 +94,17 @@ function App() {
               <span>Alerts</span>
 
             </div>
+            {/* Location Icon */}
+             <div onClick={() => setActiveSection("LocationSection")}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                      <path d="M0 0h24v24H0z" fill="none" />
+                      <path fill="currentColor" d="M12 11.5A2.5 2.5 0 0 1 9.5 9A2.5 2.5 0 0 1 12 6.5A2.5 2.5 0 0 1 14.5 9a2.5 2.5 0 0 1-2.5 2.5M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7" />
+                </svg>
+              <span>Location</span>
+
+            </div>
             {/* Contacts Icon*/}
-            <div>
+            <div onClick={() => setActiveSection("ContactSection")}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
                   <path d="M0 0h24v24H0z" fill="none" />
                   <path fill="currentColor" d="M6 17c0-2 4-3.1 6-3.1s6 1.1 6 3.1v1H6m9-9a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3a3 3 0 0 1 3 3M3 5v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2" />

@@ -44,7 +44,7 @@
 }
 
 .footer div {
-    width: 25%;
+    width: 20%;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -455,17 +455,6 @@
 
 
 
-.main-interface .location-section {
-
-}
-
-.main-interface .home-section {
-    display: none;
-}
-
-.main-interface .contact-section {
-    display: none;
-}
 
 
 
