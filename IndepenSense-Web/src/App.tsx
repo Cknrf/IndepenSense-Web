@@ -2,10 +2,46 @@ import './App.css'
 import HomeSection from './components/Home/HomeSection'
 import ContactSection from './components/Contacts/ContactSection';
 import LocationSection from './components/Location/LocationSection';
+import {useEffect, useState} from "react";
 
+
+type IntervalInformation = {
+    batteryHealth: number,
+    internetStatus: number,
+    latitude: number,
+    longitude: number,
+    location: string
+}
 
 
 function App() {
+
+
+    const [intervalInformation, setIntervalInformation] = useState<IntervalInformation>();
+    const [activeSection, setActiveSection] = useState("HomeSection");
+
+    useEffect(() => {
+
+        async function fetchIntervalInformation() {
+            const response = await fetch("http://localhost:3000/web/get-interval-information");
+            const data = await response.json();
+            setIntervalInformation(data);
+        }
+
+        fetchIntervalInformation();
+        const intervalID = setInterval(fetchIntervalInformation, 5000);
+        return () => clearInterval(intervalID);
+    }, []);
+
+    useEffect(() => {
+      
+
+
+
+    })
+
+
+    
 
   return (
     <div className="main-container">
@@ -17,16 +53,26 @@ function App() {
         <div className="main-interface">
 
           {/* Home Section */}
-          <HomeSection></HomeSection>
+
+          {intervalInformation ?  
+          <HomeSection {...intervalInformation}
+          ></HomeSection>
+          :
+          <span>Unable To Retrieve Information</span>
+          } 
+         
 
 
           {/* Location Section */}
 
+          {intervalInformation ? 
           <LocationSection 
-          latitude={13.94291}
-          longitude={121.14773}
-          location="De La"
+          {...intervalInformation}
           ></LocationSection>
+          :
+          <span>Unable To Retrieve Information</span>
+        }
+         
 
           {/* Contact Section */}
 
@@ -34,9 +80,6 @@ function App() {
             
           </ContactSection>
          
-
-
-
 
         </div>
 

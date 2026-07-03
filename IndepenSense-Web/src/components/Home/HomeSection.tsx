@@ -2,7 +2,6 @@ import BatteryHealth from "./BatteryHealth"
 import LocationBox from "./LocationBox"
 import ConnectivityStatus from "./ConnectivityStatus";
 import MapBox from "./MapBox";
-import { useState, useEffect } from "react";
 
 type IntervalInformation = {
     batteryHealth: number,
@@ -12,25 +11,7 @@ type IntervalInformation = {
     location: string
 }
 
-function HomeSection() {
-
-    const [intervalInformation, setIntervalInformation] = useState<IntervalInformation>();
-
-    useEffect(() => {
-
-        async function fetchIntervalInformation() {
-            const response = await fetch("http://localhost:3000/web/get-interval-information");
-            const data = await response.json();
-            setIntervalInformation(data);
-        }
-
-        fetchIntervalInformation();
-        const intervalID = setInterval(fetchIntervalInformation, 5000);
-        return () => clearInterval(intervalID);
-
-
-    }, []);
-
+function HomeSection({batteryHealth, internetStatus, latitude, longitude, location} : IntervalInformation) {
 
           {/* Home Section */}
     return(
@@ -46,12 +27,12 @@ function HomeSection() {
             <div className="stack-container">
 
                 <BatteryHealth percentage={
-                    intervalInformation ? intervalInformation.batteryHealth : 0
+                    batteryHealth
                 }>
                 </BatteryHealth>
 
                 <ConnectivityStatus isConnected={
-                    intervalInformation?.internetStatus === 1
+                    internetStatus === 1
                 }>
 
                 </ConnectivityStatus>
@@ -100,10 +81,10 @@ function HomeSection() {
 
                 <LocationBox
                 latitude={
-                    intervalInformation ? intervalInformation.latitude : 0
+                    latitude
                 }
                 longitude={
-                    intervalInformation ? intervalInformation.longitude : 0
+                    longitude
                 }
                 location={" De La Salle Lipa"}
                 ></LocationBox>
@@ -115,15 +96,15 @@ function HomeSection() {
             <div className="stack-container">
                 <MapBox
                 latitude={
-                  intervalInformation ? intervalInformation.latitude : 0
+                  latitude
                 }
 
                 longitude={
-                  intervalInformation ? intervalInformation.longitude : 0
+                  longitude
                 }
 
                 location={
-                  intervalInformation ? intervalInformation.location : "error"
+                  location
                 }
                 ></MapBox>
             </div>

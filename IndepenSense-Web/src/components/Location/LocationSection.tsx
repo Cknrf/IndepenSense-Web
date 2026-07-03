@@ -33,9 +33,9 @@ function LocationSection({latitude, longitude, location}: Location) {
                   {location}
                 </div>
                     <MapBox
-                    latitude={13.94291}
-                    longitude={121.14773}
-                    location="De La"
+                    latitude={latitude}
+                    longitude={longitude}
+                    location={location}
                     ></MapBox>
                 <div className="message-banner-container">
                   <p>Last Updated: <span>Just Now</span></p>
