@@ -194,7 +194,14 @@
 .home-section .stack-container:nth-child(3) .maps-container {
     height: 100%;
     width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid grey;
+    border-radius: 1.5rem;
+    overflow: hidden;
 }
+
 
 
 /* Location Section */
@@ -457,11 +464,11 @@
 }
 
 .main-interface .home-section {
+
 }
 
 .main-interface .contact-section {
     display: none;
-
 }
 
 
