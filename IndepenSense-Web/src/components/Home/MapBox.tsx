@@ -28,10 +28,10 @@ function MapBox({latitude, longitude, location}: Coordinates) {
                         {location}
                         </Popup>
                     </Marker>
-                </MapContainer> :
+                </MapContainer> 
+                :
                 <p>Unable to retrieve location</p>
                 }
-                
             </div>
     );
 

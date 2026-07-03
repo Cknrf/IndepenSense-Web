@@ -201,9 +201,6 @@
     border-radius: 1.5rem;
     overflow: hidden;
 }
-
-
-
 /* Location Section */
 
 .location-section .stack-container:nth-child(1) {
@@ -257,14 +254,14 @@
     padding: 1rem;
 }
 
-.location-section .stack-container:nth-child(2) .map-container {
-    height: 90%;
+.location-section .stack-container:nth-child(2) .maps-container {
+     height: 90%;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;    
-    background-color: rgb(206, 195, 195);
     border-radius: 1.5rem;
+    overflow: hidden;
 }
 
 .location-section .stack-container:nth-child(2) .message-banner-container {
@@ -459,15 +456,17 @@
 
 
 .main-interface .location-section {
-    display: none;
+
 }
 
 .main-interface .home-section {
     display: none;
 
+
 }
 
 .main-interface .contact-section {
+    display: none;
 }
 
 
