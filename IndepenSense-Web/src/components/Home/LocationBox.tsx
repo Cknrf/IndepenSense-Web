@@ -1,6 +1,6 @@
 type Location = {
     latitude: number;
-    longtitude: number;
+    longitude: number;
     location: string;
 }
 
@@ -35,8 +35,8 @@ function LocationBox(location: Location) {
             <div> Latitude:
                 <span>{location.latitude}</span>
             </div>
-            <div> Longtitude: 
-                <span>{location.longtitude}</span>
+            <div> Longitude:
+                <span>{location.longitude}</span>
             </div>
             <div> Location: 
             <span>{location.location}</span>

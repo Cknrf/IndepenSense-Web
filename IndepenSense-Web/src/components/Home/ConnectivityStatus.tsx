@@ -1,6 +1,8 @@
+type IsConnected = {
+    isConnected: boolean;
+}
 
-
-function ConnectivityStatus(isConnected: boolean) {
+function ConnectivityStatus({isConnected}: IsConnected) {
 
     return(
         <div className="connectivity-container long-box">
@@ -15,7 +17,9 @@ function ConnectivityStatus(isConnected: boolean) {
                     Is connected:
                 </div>
                 <div>
-                    {isConnected}
+                    {
+                        isConnected ? "Yes" : "No"
+                    }
                 </div>
         </div>
     );

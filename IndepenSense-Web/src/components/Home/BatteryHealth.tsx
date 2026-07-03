@@ -1,6 +1,8 @@
+type Percentage = {
+    percentage: number;
+}
 
-
-function BatteryHealth(percentage: number) {
+function BatteryHealth({percentage}: Percentage) {
 
 
     return(
