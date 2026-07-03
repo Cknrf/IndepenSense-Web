@@ -1,7 +1,9 @@
+type Summary = {
+    userName: string;
+    totalGuardian: number;
+}
 
-
-
-function ContactSummary(user: string, numGuardian: number) {
+function ContactSummary({userName, totalGuardian}: Summary) {
 
 
     return(
@@ -15,12 +17,12 @@ function ContactSummary(user: string, numGuardian: number) {
         </div>
         <div className="monitored-container">
             <p>User:</p>
-            <span>{user}</span>
+            <span>{userName}</span>
         </div>
         <div className="line"></div>
         <div className="guardian-count-container">
             <p>Total Guardian:</p>
-            <span>{numGuardian}</span>
+            <span>{totalGuardian}</span>
         </div>
     </div>
     );
