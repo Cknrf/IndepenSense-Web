@@ -263,3 +263,9 @@
   color: #ff6467;
   font-weight: bold;
 }
+
+/* Detail Component  */
+
+.sign-up-section .detail-component:nth-child(1) .message-container {
+  height: 10%;
+}

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import "./Authentication.css";
 import Signin from "./components/Signin/Signin";
-import Signup from "./components/Signin/Signup";
+import Signup from "./components/Signup/Signup";
 
 function Authentication() {
-  const [activeSection, setActiveSection] = useState("sign-in-section");
+  const [activeSection, setActiveSection] = useState("sign-up-section");
 
   return (
     <div className="main-container">
