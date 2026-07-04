@@ -1,4 +1,8 @@
-function Signin() {
+type SetActiveSection = {
+  onSetActiveSection: (section: string) => void;
+};
+
+function Signin({ onSetActiveSection }: SetActiveSection) {
   return (
     <div className="sign-in-section section">
       <div className="stack-container">
@@ -50,7 +54,13 @@ function Signin() {
         <div className="bottom-container">
           <p>
             Don't have an account?
-            <span className="sign-up-redirect"> Create One</span>
+            <button
+              className="sign-up-redirect"
+              onClick={() => onSetActiveSection("sign-up-section")}
+            >
+              {" "}
+              Create One
+            </button>
           </p>
         </div>
       </div>

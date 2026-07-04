@@ -1,8 +1,11 @@
+import { useState } from "react";
 import "./Authentication.css";
 import Signin from "./components/Signin/Signin";
 import Signup from "./components/Signin/Signup";
 
 function Authentication() {
+  const [activeSection, setActiveSection] = useState("sign-in-section");
+
   return (
     <div className="main-container">
       <header className="header">
@@ -10,10 +13,14 @@ function Authentication() {
       </header>
       <div className="main-interface">
         {/* Sign In Section */}
-        <Signin></Signin>
+        {activeSection === "sign-in-section" && (
+          <Signin onSetActiveSection={setActiveSection}></Signin>
+        )}
 
         {/* Sign Up Section */}
-        <Signup></Signup>
+        {activeSection === "sign-up-section" && (
+          <Signup onSetActiveSection={setActiveSection}></Signup>
+        )}
       </div>
     </div>
   );

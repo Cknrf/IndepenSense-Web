@@ -140,7 +140,9 @@
   color: white;
 }
 
-.sign-in-section .bottom-container .sign-up-redirect {
+.sign-in-section .bottom-container button {
+  all: unset;
+  margin-left: 0.3rem;
   color: #ff6467;
   font-weight: bold;
 }
@@ -255,7 +257,9 @@
   color: white;
 }
 
-.sign-up-section .bottom-container .sign-up-redirect {
+.sign-up-section .bottom-container button {
+  all: unset;
+  margin-left: 0.3rem;
   color: #ff6467;
   font-weight: bold;
 }
