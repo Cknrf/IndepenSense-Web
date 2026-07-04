@@ -109,11 +109,7 @@ function Credential({
             />
           </div>
 
-          <input
-            className="submit-button"
-            type="submit"
-            value="Create account"
-          />
+          <input className="submit-button" type="submit" value="Continue" />
         </form>
       </div>
       <div className="bottom-container">
