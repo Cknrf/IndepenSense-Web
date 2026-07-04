@@ -107,13 +107,13 @@
 }
 
 .sign-in-section .form-container div input {
-  height: 2.5rem;
+  height: 2.8rem;
   width: 100%;
   border: none;
   outline: none;
   padding: 1rem;
   background-color: var(--color-bg);
-  border-radius: 1.5rem;
+  border-radius: 1rem;
 }
 
 .sign-in-section .form-container .submit-button {
