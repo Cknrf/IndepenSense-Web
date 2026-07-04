@@ -74,7 +74,7 @@ function Signup() {
         <div className="bottom-container">
           <p>
             Already have an account?
-            <span className="sign-up-redirect"> Sign In</span>
+            <span className="sign-in-redirect"> Sign In</span>
           </p>
         </div>
       </div>
