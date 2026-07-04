@@ -1,5 +1,6 @@
 import "./Authentication.css";
 import Signin from "./components/Signin/Signin";
+import Signup from "./components/Signin/Signup";
 
 function Authentication() {
   return (
@@ -10,6 +11,9 @@ function Authentication() {
       <div className="main-interface">
         {/* Sign In Section */}
         <Signin></Signin>
+
+        {/* Sign Up Section */}
+        <Signup></Signup>
       </div>
     </div>
   );

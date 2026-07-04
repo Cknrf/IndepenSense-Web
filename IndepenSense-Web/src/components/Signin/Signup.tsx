@@ -1,6 +1,6 @@
-function Signin() {
+function Signup() {
   return (
-    <div className="sign-in-section section">
+    <div className="sign-up-section section">
       <div className="stack-container">
         <div className="message-container">
           <div className="icon-container">
@@ -18,8 +18,8 @@ function Signin() {
             </svg>
           </div>
           <div className="message-information">
-            <p>Welcome Back</p>
-            <p>Sign in to keep monitoring</p>
+            <p>Create Account</p>
+            <p>Register your device to begin</p>
           </div>
         </div>
         <div className="form-container">
@@ -44,13 +44,37 @@ function Signin() {
               />
             </div>
 
-            <input className="submit-button" type="submit" value="Sign In" />
+            <div>
+              <label htmlFor="confirm-password">Confirm Password</label>
+              <input
+                type="password"
+                name="confirm-password"
+                id="confirm-password"
+                placeholder="Confirm password"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="unique-id">Unique ID</label>
+              <input
+                type="password"
+                name="unique-id"
+                id="unique-id"
+                placeholder="Check UUID in the device"
+              />
+            </div>
+
+            <input
+              className="submit-button"
+              type="submit"
+              value="Create account"
+            />
           </form>
         </div>
         <div className="bottom-container">
           <p>
-            Don't have an account?
-            <span className="sign-up-redirect"> Create One</span>
+            Already have an account?
+            <span className="sign-up-redirect"> Sign In</span>
           </p>
         </div>
       </div>
@@ -58,4 +82,4 @@ function Signin() {
   );
 }
 
-export default Signin;
+export default Signup;
