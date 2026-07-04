@@ -109,7 +109,7 @@ function Detail({ guardian, onSetCredential, onNext }: SetDetail) {
               id="role"
               placeholder="Enter your role"
               required
-              value={guardian?.uuid}
+              value={guardian?.role}
               onChange={handleChange}
             />
           </div>

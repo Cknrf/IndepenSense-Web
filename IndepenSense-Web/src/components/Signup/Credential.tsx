@@ -34,7 +34,7 @@ function Credential({
   };
 
   return (
-    <div className="stack-container detail-component">
+    <div className="stack-container credential-component">
       <div className="message-container">
         <div className="icon-container">
           <svg

@@ -31,7 +31,7 @@ function Signup({ onSetActiveSection }: SetActiveSection) {
     uuid: "",
   });
 
-  const [step, setStep] = useState("details");
+  const [step, setStep] = useState("credentials");
 
   if (step === "credentials") {
     return (
