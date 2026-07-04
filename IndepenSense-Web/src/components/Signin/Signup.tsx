@@ -35,6 +35,7 @@ function Signup({ onSetActiveSection }: SetActiveSection) {
                 name="username"
                 id="username"
                 placeholder="Username"
+                required
               />
             </div>
 
@@ -45,6 +46,7 @@ function Signup({ onSetActiveSection }: SetActiveSection) {
                 name="password"
                 id="password"
                 placeholder="Enter your password"
+                required
               />
             </div>
 
@@ -55,6 +57,7 @@ function Signup({ onSetActiveSection }: SetActiveSection) {
                 name="confirm-password"
                 id="confirm-password"
                 placeholder="Confirm password"
+                required
               />
             </div>
 
@@ -65,6 +68,7 @@ function Signup({ onSetActiveSection }: SetActiveSection) {
                 name="unique-id"
                 id="unique-id"
                 placeholder="Check UUID in the device"
+                required
               />
             </div>
 
