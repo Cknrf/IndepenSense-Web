@@ -22,7 +22,28 @@ function Credential({
     }));
   };
 
-  const handleSubmission = (e: React.SubmitEvent<HTMLFormElement>) => {
+  async function confirmDevice(uuid: string) {
+    const response = await fetch(
+      "http://localhost:3000/web/device-confirmation",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: uuid,
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to confirm device");
+    }
+
+    return await response.json();
+  }
+
+  const handleSubmission = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (guardian?.password != guardian?.confirmPassword) {
@@ -30,7 +51,18 @@ function Credential({
       return;
     }
 
-    onNext("details");
+    try {
+      const isConfirmDevice = await confirmDevice(guardian?.uuid);
+      if (!isConfirmDevice) {
+        alert("UUID doesn't match");
+        return;
+      }
+
+      onNext("details");
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong while confirming the device.");
+    }
   };
 
   return (
