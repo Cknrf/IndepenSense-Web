@@ -21,7 +21,7 @@ function App() {
   useEffect(() => {
     async function fetchIntervalInformation() {
       const response = await fetch(
-        "http://localhost:3000/web/get-interval-information",
+        "http://localhost:3000/web/interval-information",
       );
       const data = await response.json();
       setIntervalInformation(data);
