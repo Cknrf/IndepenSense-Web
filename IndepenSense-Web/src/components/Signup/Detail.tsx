@@ -16,8 +16,43 @@ function Detail({ guardian, onSetCredential, onNext }: SetDetail) {
     }));
   };
 
-  const handleSubmission = (e: React.SubmitEvent<HTMLFormElement>) => {
+  async function createGuardian() {
+    const response = await fetch(
+      "http://localhost:3000/web/create-guardian-account/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: guardian.name,
+          role: guardian.role,
+          contactNumber: guardian.contactNumber,
+          email: guardian.email,
+          username: guardian.username,
+          password: guardian.password,
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      const body = await response.text();
+      throw new Error(`Server responded ${response.status}: ${body}`);
+    }
+
+    return await response.json();
+  }
+
+  const handleSubmission = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    try {
+      await createGuardian();
+      onNext("assisted-user");
+    } catch (error) {
+      console.error("createGuardian failed:", error);
+      alert("Something went wrong while creating account");
+    }
   };
 
   return (

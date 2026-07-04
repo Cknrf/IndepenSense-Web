@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Credential from "./Credential";
 import Detail from "./Detail";
+import AssistedUser from "./AssistedUser";
 
 type SetActiveSection = {
   onSetActiveSection: (section: string) => void;
@@ -44,7 +45,7 @@ function Signup({ onSetActiveSection }: SetActiveSection) {
         ></Credential>
       </div>
     );
-  } else {
+  } else if (step === "details") {
     return (
       <div className="sign-up-section section">
         <Detail
@@ -54,6 +55,8 @@ function Signup({ onSetActiveSection }: SetActiveSection) {
         ></Detail>
       </div>
     );
+  } else {
+    <AssistedUser></AssistedUser>;
   }
 }
 
