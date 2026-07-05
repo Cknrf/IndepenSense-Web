@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Credential from "./Credential";
 import Detail from "./Detail";
-import AssistedUser from "./AssistedUser";
+import LandingPage from "./LandingPage";
 
 type SetActiveSection = {
   onSetActiveSection: (section: string) => void;
@@ -32,7 +32,7 @@ function Signup({ onSetActiveSection }: SetActiveSection) {
     uuid: "",
   });
 
-  const [step, setStep] = useState("credentials");
+  const [step, setStep] = useState("detailss");
 
   if (step === "credentials") {
     return (
@@ -56,7 +56,11 @@ function Signup({ onSetActiveSection }: SetActiveSection) {
       </div>
     );
   } else {
-    <AssistedUser></AssistedUser>;
+    return (
+      <div className="sign-up-section section">
+        <LandingPage></LandingPage>
+      </div>
+    );
   }
 }
 
