@@ -149,6 +149,10 @@
 
 /* Sign Up Section */
 
+.sign-up-section {
+  position: relative;
+}
+
 .sign-up-section .stack-container:nth-child(1) {
   height: 85%;
   width: 100%;
@@ -193,7 +197,7 @@
 }
 
 .sign-up-section .stack-container:nth-child(1) .form-container {
-  height: 70%;
+  height: auto;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -271,6 +275,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 1rem;
 }
 
@@ -285,6 +290,94 @@
   height: 10%;
 }
 
-.sign-up-section .detail-component:nth-child(1) .form-container {
-  height: 60%;
+/* Assisted User Component */
+
+.sign-up-section .assisted-user-component:nth-child(1) {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.sign-up-section .assisted-user-component:nth-child(1) .message-container {
+  height: 10%;
+}
+
+/* Landing Page Component */
+
+.landing-page-component {
+  height: 80%;
+  width: 100%;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.landing-page-component .stack-child-container:nth-child(1) {
+  height: auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.landing-page-component .stack-child-container:nth-child(1) .icon-container {
+  height: 4rem;
+  width: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: red;
+  font-size: 2rem;
+  background-color: #1c222f;
+  border-radius: 1.5rem;
+}
+
+.landing-page-component .message-container {
+  height: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.landing-page-component .message-container h2 {
+  all: unset;
+  font-size: 1.5rem;
+  font-weight: bolder;
+}
+
+.landing-page-component .message-container p {
+  color: grey;
+}
+
+.landing-page-component button {
+  height: 3rem;
+  width: 12rem;
+  background-color: red;
+  border: none;
+  border-radius: 1.5rem;
+  font-weight: bold;
+}
+
+.landing-page-component .tip-container {
+  height: auto;
+  width: 90%;
+  margin-top: 1rem;
+  background-color: #1c222f;
+  border-radius: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  color: grey;
 }
