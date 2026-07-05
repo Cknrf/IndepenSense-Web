@@ -1,3 +1,4 @@
+import { resumeAndPrerenderToNodeStream } from "react-dom/static";
 import type { Guardian } from "./Signup";
 
 type SetCredential = {
@@ -37,7 +38,34 @@ function Credential({
     );
 
     if (!response.ok) {
-      throw new Error("Failed to confirm device");
+      const body = await response.text();
+      throw new Error(
+        `Failed to confirm device. Server responded ${response.status}: ${body}`,
+      );
+    }
+
+    return await response.json();
+  }
+
+  async function doesUsernameExist(name: string) {
+    const response = await fetch(
+      "http://localhost:3000/web/does-username-exist/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: name,
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      const body = await response.text();
+      throw new Error(
+        `Failed to check username. Server responded ${response.status}: ${body}`,
+      );
     }
 
     return await response.json();
@@ -52,6 +80,12 @@ function Credential({
     }
 
     try {
+      const doesUserExist = await doesUsernameExist(guardian.username);
+      if (!doesUserExist) {
+        alert("Username is already existing");
+        return;
+      }
+
       const isConfirmDevice = await confirmDevice(guardian?.uuid);
       if (!isConfirmDevice) {
         alert("UUID doesn't match");
