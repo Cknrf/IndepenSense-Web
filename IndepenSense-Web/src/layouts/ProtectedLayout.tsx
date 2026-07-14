@@ -29,7 +29,7 @@ function ProtectedLayout() {
     async function fetchIntervalInformation() {
       const response = await fetch(
         "http://localhost:3000/web/interval-information",
-        { credentials: "include" },
+        { credentials: "include", cache: "no-store" },
       );
       if (response.status === 401) {
         setUser(null);
