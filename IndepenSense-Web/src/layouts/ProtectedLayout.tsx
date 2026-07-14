@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router";
+import { useAuth } from "../contexts/AuthContext";
 import "../App.css";
 
 export type IntervalInformation = {
@@ -20,6 +21,7 @@ const TITLES: Record<string, string> = {
 
 function ProtectedLayout() {
   const { pathname } = useLocation();
+  const { setUser } = useAuth();
   const [intervalInformation, setIntervalInformation] =
     useState<IntervalInformation | null>(null);
 
@@ -27,15 +29,21 @@ function ProtectedLayout() {
     async function fetchIntervalInformation() {
       const response = await fetch(
         "http://localhost:3000/web/interval-information",
+        { credentials: "include" },
       );
-      const data = (await response.json()) as IntervalInformation;
+      if (response.status === 401) {
+        setUser(null);
+        return;
+      }
+      if (!response.ok) return;
+      const data = (await response.json()) as IntervalInformation | null;
       setIntervalInformation(data);
     }
 
     fetchIntervalInformation();
     const intervalID = setInterval(fetchIntervalInformation, 5000);
     return () => clearInterval(intervalID);
-  }, []);
+  }, [setUser]);
 
   const isOnboarding = pathname.startsWith("/onboarding");
   const header = TITLES[pathname] ?? "";
