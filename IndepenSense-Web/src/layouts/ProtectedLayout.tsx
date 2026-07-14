@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
+import ProfileDrawer from "../components/ProfileDrawer/ProfileDrawer";
 import "../App.css";
 
 export type IntervalInformation = {
@@ -25,6 +26,7 @@ function ProtectedLayout() {
   const assistedUserID = activeAssistedUser?.id;
   const [intervalInformation, setIntervalInformation] =
     useState<IntervalInformation | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     if (!assistedUserID) return;
@@ -55,6 +57,24 @@ function ProtectedLayout() {
     <div className="main-container">
       <header className="header">
         <h2>{header}</h2>
+        <button
+          className="header-profile-button"
+          onClick={() => setDrawerOpen(true)}
+          aria-label="Open profile"
+          type="button"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="1em"
+            height="1em"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="currentColor"
+              d="M12 2a10 10 0 0 1 10 10a10 10 0 0 1-10 10A10 10 0 0 1 2 12A10 10 0 0 1 12 2m0 3a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 14.2c2.5 0 4.71-1.28 6-3.22c-.03-1.99-4-3.08-6-3.08c-2.01 0-5.97 1.09-6 3.08a7.23 7.23 0 0 0 6 3.22"
+            />
+          </svg>
+        </button>
       </header>
 
       <div className="main-interface">
@@ -128,6 +148,11 @@ function ProtectedLayout() {
           </NavLink>
         </footer>
       )}
+
+      <ProfileDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+      />
     </div>
   );
 }

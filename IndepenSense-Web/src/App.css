@@ -20,8 +20,29 @@
   background-color: #171d27;
   border-bottom: 1px solid white;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  padding: 0 1.25rem;
+}
+
+.header-profile-button {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  font-size: 1.25rem;
+  padding: 0;
+}
+
+.header-profile-button:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: white;
 }
 
 .main-interface {
