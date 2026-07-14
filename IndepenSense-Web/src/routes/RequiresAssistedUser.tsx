@@ -3,7 +3,8 @@ import { useAuth } from "../contexts/AuthContext";
 
 function RequiresAssistedUser() {
   const { user } = useAuth();
-  if (!user?.assisstedUserID) return <Navigate to="/onboarding" replace />;
+  if (!user?.assistedUsers?.length)
+    return <Navigate to="/onboarding" replace />;
   return <Outlet />;
 }
 

@@ -1,9 +1,20 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import type { ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
+
+export type AssistedUserSummary = {
+  id: number;
+  name: string;
+};
 
 export type Guardian = {
   name: string;
-  assisstedUserID: number;
+  assistedUsers: AssistedUserSummary[];
   role: string;
   contactNumber: string;
   email: string;
@@ -12,31 +23,46 @@ export type Guardian = {
 
 type AuthContextValue = {
   user: Guardian | null;
+  isLoading: boolean;
   signIn: (username: string, password: string) => Promise<void>;
-  signOut: () => void;
+  signOut: () => Promise<void>;
+  refreshUser: () => Promise<void>;
+  setUser: Dispatch<SetStateAction<Guardian | null>>;
 };
 
-const STORAGE_KEY = "indepensense.user";
+const API_BASE = "http://localhost:3000/web";
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<Guardian | null>(() => {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Guardian) : null;
-  });
+  const [user, setUser] = useState<Guardian | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const refreshUser = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_BASE}/me`, {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        setUser(null);
+        return;
+      }
+      const guardian = (await response.json()) as Guardian;
+      setUser(guardian);
+    } catch (error) {
+      console.error(error);
+      setUser(null);
+    }
+  }, []);
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-  }, [user]);
+    refreshUser().finally(() => setIsLoading(false));
+  }, [refreshUser]);
 
   const signIn = async (username: string, password: string) => {
-    const response = await fetch("http://localhost:3000/web/signin", {
+    const response = await fetch(`${API_BASE}/signin`, {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
     });
@@ -50,10 +76,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(guardian);
   };
 
-  const signOut = () => setUser(null);
+  const signOut = async () => {
+    try {
+      await fetch(`${API_BASE}/signout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error(error);
+    }
+    setUser(null);
+  };
 
   return (
-    <AuthContext.Provider value={{ user, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, signIn, signOut, refreshUser, setUser }}
+    >
       {children}
     </AuthContext.Provider>
   );
