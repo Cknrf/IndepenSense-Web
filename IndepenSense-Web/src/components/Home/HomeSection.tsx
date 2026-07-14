@@ -30,9 +30,7 @@ function HomeSection() {
       <div className="stack-container">
         <BatteryHealth percentage={batteryHealth}></BatteryHealth>
 
-        <ConnectivityStatus
-          isConnected={internetStatus}
-        ></ConnectivityStatus>
+        <ConnectivityStatus isConnected={internetStatus}></ConnectivityStatus>
 
         <div className="stack-child-container">
           <div className="alert-container box">
