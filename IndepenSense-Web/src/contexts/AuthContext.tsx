@@ -24,6 +24,8 @@ export type Guardian = {
 type AuthContextValue = {
   user: Guardian | null;
   isLoading: boolean;
+  activeAssistedUser: AssistedUserSummary | null;
+  setActiveAssistedUserID: (id: number) => void;
   signIn: (username: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -37,6 +39,14 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<Guardian | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeAssistedUserID, setActiveAssistedUserID] = useState<
+    number | null
+  >(null);
+
+  const activeAssistedUser =
+    user?.assistedUsers?.find((u) => u.id === activeAssistedUserID) ??
+    user?.assistedUsers?.[0] ??
+    null;
 
   const refreshUser = useCallback(async () => {
     try {
@@ -90,7 +100,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoading, signIn, signOut, refreshUser, setUser }}
+      value={{
+        user,
+        isLoading,
+        activeAssistedUser,
+        setActiveAssistedUserID,
+        signIn,
+        signOut,
+        refreshUser,
+        setUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

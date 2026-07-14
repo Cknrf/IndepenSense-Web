@@ -21,8 +21,8 @@ const TITLES: Record<string, string> = {
 
 function ProtectedLayout() {
   const { pathname } = useLocation();
-  const { user, setUser } = useAuth();
-  const assistedUserID = user?.assistedUsers?.[0]?.id;
+  const { activeAssistedUser, setUser } = useAuth();
+  const assistedUserID = activeAssistedUser?.id;
   const [intervalInformation, setIntervalInformation] =
     useState<IntervalInformation | null>(null);
 

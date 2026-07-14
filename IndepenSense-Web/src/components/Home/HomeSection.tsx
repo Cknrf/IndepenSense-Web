@@ -8,11 +8,11 @@ import { useAuth } from "../../contexts/AuthContext";
 
 function HomeSection() {
   const data = useOutletContext<IntervalInformation | null>();
-  const { user } = useAuth();
+  const { user, activeAssistedUser } = useAuth();
   if (!data) return <span>Unable To Retrieve Information</span>;
   const { batteryHealth, internetStatus, latitude, longitude, location } = data;
   const guardianName = user?.name ?? "";
-  const assistedName = user?.assistedUsers?.[0]?.name ?? "";
+  const assistedName = activeAssistedUser?.name ?? "";
   {
     /* Home Section */
   }
