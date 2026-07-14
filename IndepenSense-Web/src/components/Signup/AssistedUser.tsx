@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import type { AssistedUserSummary } from "../../contexts/AuthContext";
 
 type AssistedUserProps = {
   onDone: () => void;
@@ -10,6 +12,7 @@ type AssistedUserInfo = {
 };
 
 function AssistedUser({ onDone }: AssistedUserProps) {
+  const { setUser } = useAuth();
   const [assistedUser, setAssistedUser] = useState<AssistedUserInfo>({
     name: "",
     uuid: "",
@@ -24,11 +27,12 @@ function AssistedUser({ onDone }: AssistedUserProps) {
     }));
   };
 
-  async function createAssistedUser() {
+  async function createAssistedUser(): Promise<AssistedUserSummary> {
     const response = await fetch(
       "http://localhost:3000/web/create-assisted-user-account/",
       {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -44,14 +48,19 @@ function AssistedUser({ onDone }: AssistedUserProps) {
       throw new Error(`Server responded: ${response.status} ${body}`);
     }
 
-    return await response.json();
+    return (await response.json()) as AssistedUserSummary;
   }
 
   const handleSubmission = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      await createAssistedUser();
+      const created = await createAssistedUser();
+      setUser((prev) =>
+        prev
+          ? { ...prev, assistedUsers: [...prev.assistedUsers, created] }
+          : prev,
+      );
       onDone();
     } catch (error) {
       console.error("Creation of Assisted User Account Failed:", error);
