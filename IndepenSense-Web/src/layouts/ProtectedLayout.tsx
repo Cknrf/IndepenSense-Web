@@ -21,14 +21,17 @@ const TITLES: Record<string, string> = {
 
 function ProtectedLayout() {
   const { pathname } = useLocation();
-  const { setUser } = useAuth();
+  const { user, setUser } = useAuth();
+  const assistedUserID = user?.assistedUsers?.[0]?.id;
   const [intervalInformation, setIntervalInformation] =
     useState<IntervalInformation | null>(null);
 
   useEffect(() => {
+    if (!assistedUserID) return;
+
     async function fetchIntervalInformation() {
       const response = await fetch(
-        "http://localhost:3000/web/interval-information",
+        `http://localhost:3000/web/interval-information/${assistedUserID}`,
         { credentials: "include" },
       );
       if (response.status === 401) {
@@ -43,7 +46,7 @@ function ProtectedLayout() {
     fetchIntervalInformation();
     const intervalID = setInterval(fetchIntervalInformation, 5000);
     return () => clearInterval(intervalID);
-  }, [setUser]);
+  }, [assistedUserID, setUser]);
 
   const isOnboarding = pathname.startsWith("/onboarding");
   const header = TITLES[pathname] ?? "";
