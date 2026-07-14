@@ -4,11 +4,15 @@ import LocationBox from "./LocationBox";
 import ConnectivityStatus from "./ConnectivityStatus";
 import MapBox from "./MapBox";
 import type { IntervalInformation } from "../../layouts/ProtectedLayout";
+import { useAuth } from "../../contexts/AuthContext";
 
 function HomeSection() {
   const data = useOutletContext<IntervalInformation | null>();
+  const { user } = useAuth();
   if (!data) return <span>Unable To Retrieve Information</span>;
   const { batteryHealth, internetStatus, latitude, longitude, location } = data;
+  const guardianName = user?.name ?? "";
+  const assistedName = user?.assistedUsers?.[0]?.name ?? "";
   {
     /* Home Section */
   }
@@ -18,11 +22,11 @@ function HomeSection() {
         <div className="message-container">
           <h2>
             {" "}
-            Hello, Guardian <span>Yoru</span>
+            Hello, Guardian <span>{guardianName}</span>
           </h2>
           <h4>
             {" "}
-            Keep monitoring <span>Rowela</span>
+            Keep monitoring <span>{assistedName}</span>
           </h4>
         </div>
       </div>
