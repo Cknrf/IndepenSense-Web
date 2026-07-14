@@ -140,3 +140,88 @@
   text-align: right;
   word-break: break-all;
 }
+
+.profile-drawer-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.6rem;
+  padding: 0 0.25rem;
+}
+
+.profile-drawer-assisted-card {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 0.75rem;
+  padding: 0.85rem 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.profile-drawer-empty {
+  margin: 0.35rem 0.4rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.profile-drawer-assisted-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.profile-drawer-assisted-item {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 0.85rem;
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.5rem;
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.profile-drawer-assisted-item:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.profile-drawer-assisted-item.active {
+  border-color: #e05656;
+  background-color: rgba(220, 60, 60, 0.1);
+  color: #ffb0b0;
+}
+
+.profile-drawer-add-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: #e05656;
+  border: none;
+  border-radius: 0.6rem;
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.profile-drawer-add-button:hover {
+  background-color: #c94848;
+}

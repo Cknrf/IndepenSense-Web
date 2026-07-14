@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router";
 import { useAuth } from "../../contexts/AuthContext";
 import "./ProfileDrawer.css";
 
@@ -8,7 +9,13 @@ type ProfileDrawerProps = {
 };
 
 function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
-  const { user } = useAuth();
+  const { user, activeAssistedUser, setActiveAssistedUserID } = useAuth();
+  const navigate = useNavigate();
+
+  const handleAddAssistedUser = () => {
+    onClose();
+    navigate("/onboarding");
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -86,6 +93,78 @@ function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                   <span className="profile-drawer-details-value">
                     {user.email}
                   </span>
+                </div>
+              </section>
+
+              <section className="profile-drawer-section">
+                <div className="profile-drawer-section-header">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="1em"
+                    height="1em"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M16 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4M8 6a3 3 0 0 1 3 3c0 .79-.31 1.5-.81 2.03A4.99 4.99 0 0 0 8 15a4.99 4.99 0 0 0-2.19-3.97A2.99 2.99 0 0 1 5 9a3 3 0 0 1 3-3m8 8c2.67 0 8 1.34 8 4v2h-8v-2c0-1.4-.61-2.62-1.55-3.5c.53-.32 1.09-.5 1.55-.5M8 13c2.67 0 8 1.34 8 4v2H0v-2c0-2.66 5.33-4 8-4"
+                    />
+                  </svg>
+                  <span>ASSISTED USERS</span>
+                </div>
+
+                <div className="profile-drawer-assisted-card">
+                  {user.assistedUsers.length === 0 ? (
+                    <p className="profile-drawer-empty">
+                      No assisted users linked yet.
+                    </p>
+                  ) : (
+                    <ul className="profile-drawer-assisted-list">
+                      {user.assistedUsers.map((au) => {
+                        const isActive = au.id === activeAssistedUser?.id;
+                        return (
+                          <li key={au.id}>
+                            <button
+                              type="button"
+                              className={`profile-drawer-assisted-item${isActive ? " active" : ""}`}
+                              onClick={() => setActiveAssistedUserID(au.id)}
+                            >
+                              <span>{au.name}</span>
+                              {isActive && (
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="1em"
+                                  height="1em"
+                                  viewBox="0 0 24 24"
+                                  aria-label="active"
+                                >
+                                  <path
+                                    fill="currentColor"
+                                    d="M9 20.42L2.79 14.21l2.83-2.83L9 14.77l9.88-9.89l2.83 2.83z"
+                                  />
+                                </svg>
+                              )}
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+
+                  <button
+                    type="button"
+                    className="profile-drawer-add-button"
+                    onClick={handleAddAssistedUser}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="1em"
+                      height="1em"
+                      viewBox="0 0 24 24"
+                    >
+                      <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z" />
+                    </svg>
+                    <span>Add assisted user</span>
+                  </button>
                 </div>
               </section>
             </>
