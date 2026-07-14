@@ -1,12 +1,8 @@
-import type { Guardian } from "./Signup";
-import AssistedUser from "./AssistedUser";
-
-type SetLandingPage = {
-  guardian: Guardian;
-  onNext: (section: string) => void;
+type LandingPageProps = {
+  onAdd: () => void;
 };
 
-function LandingPage({ guardian, onNext }: SetLandingPage) {
+function LandingPage({ onAdd }: LandingPageProps) {
   return (
     <div className="landing-page-component">
       <div className="stack-child-container">
@@ -32,7 +28,7 @@ function LandingPage({ guardian, onNext }: SetLandingPage) {
           monitoring an assisted user. Add one to unlock them.
         </p>
       </div>
-      <button>Add assisted user</button>
+      <button onClick={onAdd}>Add assisted user</button>
       <div className="tip-container">
         <p>TIP:</p>
         <p>

@@ -1,19 +1,13 @@
-import { resumeAndPrerenderToNodeStream } from "react-dom/static";
+import { Link } from "react-router";
 import type { Guardian } from "./Signup";
 
 type SetCredential = {
   guardian: Guardian;
   onSetCredential: React.Dispatch<React.SetStateAction<Guardian>>;
-  onNext: (step: string) => void;
-  onSetActiveSection: (section: string) => void;
+  onNext: (step: "credentials" | "details") => void;
 };
 
-function Credential({
-  guardian,
-  onSetCredential,
-  onNext,
-  onSetActiveSection,
-}: SetCredential) {
+function Credential({ guardian, onSetCredential, onNext }: SetCredential) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
@@ -81,7 +75,7 @@ function Credential({
 
     try {
       const doesUserExist = await doesUsernameExist(guardian.username);
-      if (!doesUserExist) {
+      if (doesUserExist) {
         alert("Username is already existing");
         return;
       }
@@ -181,13 +175,10 @@ function Credential({
       <div className="bottom-container">
         <p>
           Already have an account?
-          <button
-            className="sign-in-redirect"
-            onClick={() => onSetActiveSection("sign-in-section")}
-          >
+          <Link className="sign-in-redirect" to="/signin">
             {" "}
             Sign In
-          </button>
+          </Link>
         </p>
       </div>
     </div>

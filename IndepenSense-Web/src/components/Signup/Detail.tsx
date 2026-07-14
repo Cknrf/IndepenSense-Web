@@ -1,12 +1,15 @@
+import { useNavigate } from "react-router";
 import type { Guardian } from "./Signup";
 
 type SetDetail = {
   guardian: Guardian;
   onSetCredential: React.Dispatch<React.SetStateAction<Guardian>>;
-  onNext: (step: string) => void;
+  onBack: () => void;
 };
 
-function Detail({ guardian, onSetCredential, onNext }: SetDetail) {
+function Detail({ guardian, onSetCredential, onBack }: SetDetail) {
+  const navigate = useNavigate();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
@@ -48,7 +51,7 @@ function Detail({ guardian, onSetCredential, onNext }: SetDetail) {
 
     try {
       await createGuardian();
-      onNext("assisted-user");
+      navigate("/signin");
     } catch (error) {
       console.error("createGuardian failed:", error);
       alert("Something went wrong while creating account");
@@ -57,10 +60,7 @@ function Detail({ guardian, onSetCredential, onNext }: SetDetail) {
 
   return (
     <div className="stack-container detail-component">
-      <div
-        className="back-button-container"
-        onClick={() => onNext("credentials")}
-      >
+      <div className="back-button-container" onClick={onBack}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="0.5em"
@@ -70,7 +70,7 @@ function Detail({ guardian, onSetCredential, onNext }: SetDetail) {
           <path d="M0 0h12v24H0z" fill="none" />
           <path
             fill="currentColor"
-            fill-rule="evenodd"
+            fillRule="evenodd"
             d="m3.343 12l7.071 7.071L9 20.485l-7.778-7.778a1 1 0 0 1 0-1.414L9 3.515l1.414 1.414z"
           />
         </svg>

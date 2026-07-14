@@ -1,12 +1,11 @@
+import { useOutletContext } from "react-router";
 import MapBox from "../Home/MapBox";
+import type { IntervalInformation } from "../../layouts/ProtectedLayout";
 
-type Location = {
-  latitude: number;
-  longitude: number;
-  location: string;
-};
-
-function LocationSection({ latitude, longitude, location }: Location) {
+function LocationSection() {
+  const data = useOutletContext<IntervalInformation | null>();
+  if (!data) return <span>Unable To Retrieve Information</span>;
+  const { latitude, longitude, location } = data;
   return (
     <div className="location-section section">
       <div className="stack-container">

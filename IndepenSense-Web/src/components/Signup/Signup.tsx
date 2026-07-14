@@ -1,11 +1,6 @@
 import { useState } from "react";
 import Credential from "./Credential";
 import Detail from "./Detail";
-import LandingPage from "./LandingPage";
-
-type SetActiveSection = {
-  onSetActiveSection: (section: string) => void;
-};
 
 export type Guardian = {
   name: string;
@@ -19,7 +14,7 @@ export type Guardian = {
   uuid: string;
 };
 
-function Signup({ onSetActiveSection }: SetActiveSection) {
+function Signup() {
   const [guardian, setGuardian] = useState<Guardian>({
     name: "",
     assisstedUserID: 0,
@@ -32,36 +27,25 @@ function Signup({ onSetActiveSection }: SetActiveSection) {
     uuid: "",
   });
 
-  const [step, setStep] = useState("detailss");
+  const [step, setStep] = useState<"credentials" | "details">("credentials");
 
-  if (step === "credentials") {
-    return (
-      <div className="sign-up-section section">
+  return (
+    <div className="sign-up-section section">
+      {step === "credentials" ? (
         <Credential
           guardian={guardian}
           onSetCredential={setGuardian}
           onNext={setStep}
-          onSetActiveSection={onSetActiveSection}
-        ></Credential>
-      </div>
-    );
-  } else if (step === "details") {
-    return (
-      <div className="sign-up-section section">
+        />
+      ) : (
         <Detail
           guardian={guardian}
           onSetCredential={setGuardian}
-          onNext={setStep}
-        ></Detail>
-      </div>
-    );
-  } else {
-    return (
-      <div className="sign-up-section section">
-        <LandingPage></LandingPage>
-      </div>
-    );
-  }
+          onBack={() => setStep("credentials")}
+        />
+      )}
+    </div>
+  );
 }
 
 export default Signup;

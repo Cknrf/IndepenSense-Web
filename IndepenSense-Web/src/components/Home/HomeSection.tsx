@@ -1,23 +1,14 @@
+import { useOutletContext } from "react-router";
 import BatteryHealth from "./BatteryHealth";
 import LocationBox from "./LocationBox";
 import ConnectivityStatus from "./ConnectivityStatus";
 import MapBox from "./MapBox";
+import type { IntervalInformation } from "../../layouts/ProtectedLayout";
 
-type IntervalInformation = {
-  batteryHealth: number;
-  internetStatus: number;
-  latitude: number;
-  longitude: number;
-  location: string;
-};
-
-function HomeSection({
-  batteryHealth,
-  internetStatus,
-  latitude,
-  longitude,
-  location,
-}: IntervalInformation) {
+function HomeSection() {
+  const data = useOutletContext<IntervalInformation | null>();
+  if (!data) return <span>Unable To Retrieve Information</span>;
+  const { batteryHealth, internetStatus, latitude, longitude, location } = data;
   {
     /* Home Section */
   }

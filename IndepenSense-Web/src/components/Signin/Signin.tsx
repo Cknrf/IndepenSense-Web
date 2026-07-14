@@ -1,8 +1,24 @@
-type SetActiveSection = {
-  onSetActiveSection: (section: string) => void;
-};
+import { useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { useAuth } from "../../contexts/AuthContext";
 
-function Signin({ onSetActiveSection }: SetActiveSection) {
+function Signin() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      await signIn(username, password);
+      navigate("/home");
+    } catch (error) {
+      console.error(error);
+      alert("Sign in failed. Please check your credentials.");
+    }
+  };
+
   return (
     <div className="sign-in-section section">
       <div className="stack-container">
@@ -27,7 +43,7 @@ function Signin({ onSetActiveSection }: SetActiveSection) {
           </div>
         </div>
         <div className="form-container">
-          <form action="">
+          <form onSubmit={handleSubmit}>
             <div>
               <label htmlFor="username">Username</label>
               <input
@@ -36,6 +52,8 @@ function Signin({ onSetActiveSection }: SetActiveSection) {
                 id="username"
                 placeholder="Username"
                 required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
 
@@ -47,6 +65,8 @@ function Signin({ onSetActiveSection }: SetActiveSection) {
                 id="password"
                 placeholder="Enter your password"
                 required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
@@ -56,13 +76,10 @@ function Signin({ onSetActiveSection }: SetActiveSection) {
         <div className="bottom-container">
           <p>
             Don't have an account?
-            <button
-              className="sign-up-redirect"
-              onClick={() => onSetActiveSection("sign-up-section")}
-            >
+            <Link className="sign-up-redirect" to="/signup">
               {" "}
               Create One
-            </button>
+            </Link>
           </p>
         </div>
       </div>

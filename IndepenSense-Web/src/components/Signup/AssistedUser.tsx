@@ -1,23 +1,18 @@
 import { useState } from "react";
-import type { Guardian } from "./Signup";
 
-type SetDetail = {
-  guardian: Guardian;
-  onSetCredential: React.Dispatch<React.SetStateAction<Guardian>>;
-  onNext: (step: string) => void;
+type AssistedUserProps = {
+  onDone: () => void;
 };
 
 type AssistedUserInfo = {
   name: string;
   uuid: string;
-  guardianID: number;
 };
 
-function AssistedUser({ name, uuid, guardianID }: AssistedUserInfo) {
+function AssistedUser({ onDone }: AssistedUserProps) {
   const [assistedUser, setAssistedUser] = useState<AssistedUserInfo>({
     name: "",
     uuid: "",
-    guardianID: 0,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +26,7 @@ function AssistedUser({ name, uuid, guardianID }: AssistedUserInfo) {
 
   async function createAssistedUser() {
     const response = await fetch(
-      "localhost:3000/web/create-assisted-user-account/",
+      "http://localhost:3000/web/create-assisted-user-account/",
       {
         method: "POST",
         headers: {
@@ -39,7 +34,7 @@ function AssistedUser({ name, uuid, guardianID }: AssistedUserInfo) {
         },
         body: JSON.stringify({
           name: assistedUser.name,
-          deviceID: assistedUser,
+          deviceID: assistedUser.uuid,
         }),
       },
     );
@@ -49,7 +44,7 @@ function AssistedUser({ name, uuid, guardianID }: AssistedUserInfo) {
       throw new Error(`Server responded: ${response.status} ${body}`);
     }
 
-    return await response.json;
+    return await response.json();
   }
 
   const handleSubmission = async (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -57,6 +52,7 @@ function AssistedUser({ name, uuid, guardianID }: AssistedUserInfo) {
 
     try {
       await createAssistedUser();
+      onDone();
     } catch (error) {
       console.error("Creation of Assisted User Account Failed:", error);
       alert("Something went wrong while creating account");
@@ -95,7 +91,7 @@ function AssistedUser({ name, uuid, guardianID }: AssistedUserInfo) {
               id="name"
               placeholder="Enter assisted user's name"
               required
-              value={assistedUser?.name}
+              value={assistedUser.name}
               onChange={handleChange}
             />
           </div>
@@ -108,7 +104,7 @@ function AssistedUser({ name, uuid, guardianID }: AssistedUserInfo) {
               id="unique-id"
               placeholder="Check UUID in the device"
               required
-              value={assistedUser?.uuid}
+              value={assistedUser.uuid}
               onChange={handleChange}
             />
           </div>
