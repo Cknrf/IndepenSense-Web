@@ -13,14 +13,16 @@ function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
     useAuth();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState(false);
+  const [confirmSignOut, setConfirmSignOut] = useState(false);
 
   const handleAddAssistedUser = () => {
     onClose();
     navigate("/onboarding");
   };
 
-  const handleSignOut = async () => {
+  const handleConfirmSignOut = async () => {
     await signOut();
+    setConfirmSignOut(false);
     onClose();
     navigate("/signin");
   };
@@ -28,11 +30,16 @@ function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   useEffect(() => {
     if (!open) return;
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key !== "Escape") return;
+      if (confirmSignOut) {
+        setConfirmSignOut(false);
+      } else {
+        onClose();
+      }
     };
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
-  }, [open, onClose]);
+  }, [open, onClose, confirmSignOut]);
 
   return (
     <>
@@ -223,7 +230,7 @@ function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
               <button
                 type="button"
                 className="profile-drawer-signout-button"
-                onClick={handleSignOut}
+                onClick={() => setConfirmSignOut(true)}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -241,6 +248,40 @@ function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
             </>
           )}
         </div>
+
+        {confirmSignOut && (
+          <div
+            className="profile-drawer-confirm-overlay"
+            onClick={() => setConfirmSignOut(false)}
+          >
+            <div
+              className="profile-drawer-confirm-dialog"
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="signout-confirm-title"
+            >
+              <h3 id="signout-confirm-title">Log out?</h3>
+              <p>You'll be signed out and returned to the sign-in page.</p>
+              <div className="profile-drawer-confirm-actions">
+                <button
+                  type="button"
+                  className="profile-drawer-confirm-cancel"
+                  onClick={() => setConfirmSignOut(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="profile-drawer-confirm-confirm"
+                  onClick={handleConfirmSignOut}
+                >
+                  Log out
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </aside>
     </>
   );
