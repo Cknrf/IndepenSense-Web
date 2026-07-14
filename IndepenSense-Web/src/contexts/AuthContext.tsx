@@ -33,15 +33,35 @@ type AuthContextValue = {
 };
 
 const API_BASE = "http://localhost:3000/web";
+const ACTIVE_ASSISTED_USER_KEY = "indepensense.activeAssistedUserID";
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<Guardian | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeAssistedUserID, setActiveAssistedUserID] = useState<
+  const [activeAssistedUserID, setActiveAssistedUserIDState] = useState<
     number | null
-  >(null);
+  >(() => {
+    const stored = localStorage.getItem(ACTIVE_ASSISTED_USER_KEY);
+    if (!stored) return null;
+    const parsed = Number.parseInt(stored, 10);
+    return Number.isNaN(parsed) ? null : parsed;
+  });
+
+  useEffect(() => {
+    if (activeAssistedUserID === null) {
+      localStorage.removeItem(ACTIVE_ASSISTED_USER_KEY);
+    } else {
+      localStorage.setItem(
+        ACTIVE_ASSISTED_USER_KEY,
+        String(activeAssistedUserID),
+      );
+    }
+  }, [activeAssistedUserID]);
+
+  const setActiveAssistedUserID = (id: number) =>
+    setActiveAssistedUserIDState(id);
 
   const activeAssistedUser =
     user?.assistedUsers?.find((u) => u.id === activeAssistedUserID) ??

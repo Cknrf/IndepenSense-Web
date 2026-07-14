@@ -29,6 +29,7 @@ function ProtectedLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
+    setIntervalInformation(null);
     if (!assistedUserID) return;
 
     async function fetchIntervalInformation() {
