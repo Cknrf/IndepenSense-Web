@@ -5,7 +5,7 @@ import "../App.css";
 
 export type IntervalInformation = {
   batteryHealth: number;
-  internetStatus: number;
+  internetStatus: boolean;
   latitude: number;
   longitude: number;
   location: string;

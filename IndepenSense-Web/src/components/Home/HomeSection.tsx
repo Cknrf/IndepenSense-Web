@@ -31,7 +31,7 @@ function HomeSection() {
         <BatteryHealth percentage={batteryHealth}></BatteryHealth>
 
         <ConnectivityStatus
-          isConnected={internetStatus === 1}
+          isConnected={internetStatus}
         ></ConnectivityStatus>
 
         <div className="stack-child-container">
