@@ -115,7 +115,7 @@ function HomeSection() {
           <LocationBox
             latitude={latitude}
             longitude={longitude}
-            location={" De La Salle Lipa"}
+            location={location}
           ></LocationBox>
         </div>
       </div>
