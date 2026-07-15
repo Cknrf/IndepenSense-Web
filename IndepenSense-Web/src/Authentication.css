@@ -366,6 +366,19 @@
   border: none;
   border-radius: 1.5rem;
   font-weight: bold;
+  color: white;
+  cursor: pointer;
+}
+
+.landing-page-component button.secondary {
+  background-color: rgb(75, 22, 22);
+  border: 1px solid red;
+  color: white;
+  margin-top: 0.5rem;
+}
+
+.landing-page-component button.secondary:hover {
+  background-color: rgba(255, 0, 0, 0.08);
 }
 
 .landing-page-component .tip-container {
