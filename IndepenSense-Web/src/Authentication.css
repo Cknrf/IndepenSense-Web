@@ -121,7 +121,7 @@
 .sign-in-section .form-container .submit-button {
   height: 2.8rem;
   width: 100%;
-  color: var(--g-text);
+  color: white;
   font-weight: bolder;
   background-color: #fb2c36;
   border-radius: 1rem;
@@ -242,7 +242,7 @@
 .sign-up-section .form-container .submit-button {
   height: 2.8rem;
   width: 100%;
-  color: var(--g-text);
+  color: white;
   font-weight: bolder;
   background-color: #fb2c36;
   border-radius: 1rem;

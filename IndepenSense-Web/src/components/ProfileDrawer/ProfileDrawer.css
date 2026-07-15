@@ -215,7 +215,7 @@
   background-color: #e05656;
   border: none;
   border-radius: 0.6rem;
-  color: var(--g-text);
+  color: white;
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
@@ -389,7 +389,7 @@
 .profile-drawer-confirm-confirm {
   background-color: #e05656;
   border: 1px solid #e05656;
-  color: var(--g-text);
+  color: white;
 }
 
 .profile-drawer-confirm-confirm:hover {
