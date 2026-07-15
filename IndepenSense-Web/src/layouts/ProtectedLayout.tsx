@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNotifications } from "../contexts/NotificationsContext";
 import ProfileDrawer from "../components/ProfileDrawer/ProfileDrawer";
 import Toast from "../components/Toast/Toast";
+import { playAlertSound } from "../utils/sound";
 import "../App.css";
 
 export type IntervalInformation = {
@@ -134,6 +135,7 @@ function ProtectedLayout() {
               },
             ].slice(-TOAST_CAP),
           );
+          playAlertSound();
         }
       } catch (error) {
         console.error("Failed to parse SSE alert:", error);
