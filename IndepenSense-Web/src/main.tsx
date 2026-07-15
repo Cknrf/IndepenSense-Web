@@ -4,6 +4,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import "./index.css";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { NotificationsProvider } from "./contexts/NotificationsContext";
 import AuthLayout from "./layouts/AuthLayout";
 import ProtectedLayout from "./layouts/ProtectedLayout";
 import GuestOnly from "./routes/GuestOnly";
@@ -21,6 +22,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <ThemeProvider>
+      <NotificationsProvider>
       <AuthProvider>
         <Routes>
           <Route element={<GuestOnly />}>
@@ -45,6 +47,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       </AuthProvider>
+      </NotificationsProvider>
       </ThemeProvider>
     </BrowserRouter>
   </StrictMode>,

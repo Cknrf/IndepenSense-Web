@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useNotifications } from "../../contexts/NotificationsContext";
 import "./ProfileDrawer.css";
 
 type ProfileDrawerProps = {
@@ -13,8 +14,8 @@ function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   const { user, activeAssistedUser, setActiveAssistedUserID, signOut } =
     useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { notifications, toggleNotifications } = useNotifications();
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState(false);
   const [confirmSignOut, setConfirmSignOut] = useState(false);
 
   const handleAddAssistedUser = () => {
@@ -221,7 +222,7 @@ function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                       <input
                         type="checkbox"
                         checked={notifications}
-                        onChange={(e) => setNotifications(e.target.checked)}
+                        onChange={toggleNotifications}
                       />
                       <span className="profile-drawer-toggle-slider" />
                     </label>

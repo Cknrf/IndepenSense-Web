@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
+import { useNotifications } from "../contexts/NotificationsContext";
 import ProfileDrawer from "../components/ProfileDrawer/ProfileDrawer";
+import Toast from "../components/Toast/Toast";
 import "../App.css";
 
 export type IntervalInformation = {
@@ -36,15 +38,34 @@ const TITLES: Record<string, string> = {
   "/onboarding": "Setup",
 };
 
+type ActiveToast = {
+  id: string;
+  eventType: string;
+  location: string;
+};
+
+const TOAST_CAP = 3;
+
 function ProtectedLayout() {
   const { pathname } = useLocation();
   const { user, activeAssistedUser, setUser } = useAuth();
+  const { notifications } = useNotifications();
   const assistedUserID = activeAssistedUser?.id;
   const hasAssistedUsers = (user?.assistedUsers?.length ?? 0) > 0;
   const [intervalInformation, setIntervalInformation] =
     useState<IntervalInformation | null>(null);
   const [alerts, setAlerts] = useState<AlertLog[] | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [toasts, setToasts] = useState<ActiveToast[]>([]);
+
+  const notificationsEnabledRef = useRef(notifications);
+  useEffect(() => {
+    notificationsEnabledRef.current = notifications;
+  }, [notifications]);
+
+  const dismissToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   useEffect(() => {
     setIntervalInformation(null);
@@ -102,6 +123,18 @@ function ProtectedLayout() {
             ? [alert, ...prev].slice(0, ALERT_HISTORY_CAP)
             : [alert],
         );
+        if (notificationsEnabledRef.current) {
+          setToasts((prev) =>
+            [
+              ...prev,
+              {
+                id: `${alert.id}-${Date.now()}`,
+                eventType: alert.eventType,
+                location: alert.location,
+              },
+            ].slice(-TOAST_CAP),
+          );
+        }
       } catch (error) {
         console.error("Failed to parse SSE alert:", error);
       }
@@ -222,6 +255,22 @@ function ProtectedLayout() {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       />
+
+      {toasts.length > 0 && (
+        <div className="toast-container">
+          {toasts.map((toast) => (
+            <Toast
+              key={toast.id}
+              toastId={toast.id}
+              alert={{
+                eventType: toast.eventType,
+                location: toast.location,
+              }}
+              onDismiss={dismissToast}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
