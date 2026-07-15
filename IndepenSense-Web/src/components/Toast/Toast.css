@@ -27,12 +27,28 @@
 
 @keyframes toast-in {
   from {
-    transform: translateX(120%);
+    transform: translateY(-120%);
     opacity: 0;
   }
   to {
-    transform: translateX(0);
+    transform: translateY(0);
     opacity: 1;
+  }
+}
+
+.toast.leaving {
+  animation: toast-out 0.2s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes toast-out {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-120%);
+    opacity: 0;
   }
 }
 

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import "./Toast.css";
 
@@ -14,22 +14,29 @@ type ToastProps = {
 };
 
 const AUTO_DISMISS_MS = 5000;
+const EXIT_ANIMATION_MS = 200;
 
 function Toast({ toastId, alert, onDismiss }: ToastProps) {
   const navigate = useNavigate();
+  const [leaving, setLeaving] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => onDismiss(toastId), AUTO_DISMISS_MS);
-    return () => clearTimeout(timer);
+  const dismissWithExit = useCallback(() => {
+    setLeaving(true);
+    setTimeout(() => onDismiss(toastId), EXIT_ANIMATION_MS);
   }, [toastId, onDismiss]);
 
+  useEffect(() => {
+    const timer = setTimeout(dismissWithExit, AUTO_DISMISS_MS);
+    return () => clearTimeout(timer);
+  }, [dismissWithExit]);
+
   const handleOpen = () => {
-    onDismiss(toastId);
+    dismissWithExit();
     navigate("/alerts");
   };
 
   return (
-    <div className="toast" role="alert">
+    <div className={`toast${leaving ? " leaving" : ""}`} role="alert">
       <button type="button" className="toast-body" onClick={handleOpen}>
         <div className="toast-icon">
           <svg
@@ -52,7 +59,7 @@ function Toast({ toastId, alert, onDismiss }: ToastProps) {
       <button
         type="button"
         className="toast-close"
-        onClick={() => onDismiss(toastId)}
+        onClick={dismissWithExit}
         aria-label="Dismiss"
       >
         <svg
@@ -61,9 +68,10 @@ function Toast({ toastId, alert, onDismiss }: ToastProps) {
           height="1em"
           viewBox="0 0 24 24"
         >
+          <path d="M0 0h24v24H0z" fill="none" />
           <path
             fill="currentColor"
-            d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59z"
+            d="M6.4 19L5 17.6l5.6-5.6L5 6.4L6.4 5l5.6 5.6L17.6 5L19 6.4L13.4 12l5.6 5.6l-1.4 1.4l-5.6-5.6z"
           />
         </svg>
       </button>
