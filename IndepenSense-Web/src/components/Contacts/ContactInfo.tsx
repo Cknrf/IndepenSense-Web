@@ -1,7 +1,7 @@
 type ContactPerson = {
   name: string;
   role: string;
-  contactNumber: number;
+  contactNumber: string;
 };
 
 function ContactInfo(contactPerson: ContactPerson) {
