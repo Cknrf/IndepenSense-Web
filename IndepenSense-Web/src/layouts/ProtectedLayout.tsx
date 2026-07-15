@@ -22,8 +22,9 @@ const TITLES: Record<string, string> = {
 
 function ProtectedLayout() {
   const { pathname } = useLocation();
-  const { activeAssistedUser, setUser } = useAuth();
+  const { user, activeAssistedUser, setUser } = useAuth();
   const assistedUserID = activeAssistedUser?.id;
+  const hasAssistedUsers = (user?.assistedUsers?.length ?? 0) > 0;
   const [intervalInformation, setIntervalInformation] =
     useState<IntervalInformation | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -52,6 +53,7 @@ function ProtectedLayout() {
   }, [assistedUserID, setUser]);
 
   const isOnboarding = pathname.startsWith("/onboarding");
+  const hideFooter = isOnboarding && !hasAssistedUsers;
   const header = TITLES[pathname] ?? "";
 
   return (
@@ -82,7 +84,7 @@ function ProtectedLayout() {
         <Outlet context={intervalInformation} />
       </div>
 
-      {!isOnboarding && (
+      {!hideFooter && (
         <footer className="footer">
           <NavLink to="/home">
             <svg
