@@ -1,9 +1,14 @@
+import { useAuth } from "../../contexts/AuthContext";
+
 type LandingPageProps = {
   onAdd: () => void;
   onLink: () => void;
 };
 
 function LandingPage({ onAdd, onLink }: LandingPageProps) {
+  const { user } = useAuth();
+  const hasExisting = (user?.assistedUsers?.length ?? 0) > 0;
+
   return (
     <div className="landing-page-component">
       <div className="stack-child-container">
@@ -23,10 +28,13 @@ function LandingPage({ onAdd, onLink }: LandingPageProps) {
         </div>
       </div>
       <div className="message-container">
-        <h2>No assisted user yet</h2>
+        <h2>
+          {hasExisting ? "Add another assisted user" : "No assisted user yet"}
+        </h2>
         <p>
-          Guardian features like Home, Alerts, and Contacts are made for
-          monitoring an assisted user. Add one to unlock them.
+          {hasExisting
+            ? "Create a new assisted user account or link one that's already registered to your Guardian account."
+            : "Guardian features like Home, Alerts, and Contacts are made for monitoring an assisted user. Add one to unlock them."}
         </p>
       </div>
       <button onClick={onAdd}>Add assisted user</button>
