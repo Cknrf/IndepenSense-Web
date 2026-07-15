@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../contexts/AuthContext";
+import { useTheme } from "../../contexts/ThemeContext";
 import "./ProfileDrawer.css";
 
 type ProfileDrawerProps = {
@@ -11,6 +12,7 @@ type ProfileDrawerProps = {
 function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   const { user, activeAssistedUser, setActiveAssistedUserID, signOut } =
     useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState(false);
   const [confirmSignOut, setConfirmSignOut] = useState(false);
@@ -220,6 +222,30 @@ function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                         type="checkbox"
                         checked={notifications}
                         onChange={(e) => setNotifications(e.target.checked)}
+                      />
+                      <span className="profile-drawer-toggle-slider" />
+                    </label>
+                  </div>
+                  <div className="profile-drawer-settings-row">
+                    <div className="profile-drawer-settings-label">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="1em"
+                        height="1em"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26a5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1"
+                        />
+                      </svg>
+                      <span>Dark theme</span>
+                    </div>
+                    <label className="profile-drawer-toggle">
+                      <input
+                        type="checkbox"
+                        checked={theme === "dark"}
+                        onChange={toggleTheme}
                       />
                       <span className="profile-drawer-toggle-slider" />
                     </label>

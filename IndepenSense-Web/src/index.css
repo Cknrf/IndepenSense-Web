@@ -1,16 +1,17 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #121621;
-  --color-bg: #121621;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  /* Guardian theme — dark (default) */
+  --g-bg: #121621;
+  --g-surface: #1c222f;
+  --g-surface-2: #171d27;
+  --g-text: #ffffff;
+  --g-muted: rgba(255, 255, 255, 0.6);
+  --g-faint: rgba(255, 255, 255, 0.35);
+  --g-border: #343131;
+  --g-chip: rgba(255, 255, 255, 0.05);
+
+  /* Legacy alias — keep working while we migrate */
+  --color-bg: var(--g-bg);
+  --text-white: var(--g-text);
 
   --sans: system-ui, "Segoe UI", Roboto, sans-serif;
   --heading: system-ui, "Segoe UI", Roboto, sans-serif;
@@ -18,20 +19,30 @@
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
+  color-scheme: dark light;
+  color: var(--g-text);
+  background: var(--g-bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /*  Dark Mode*/
-  --text-white: white;
-
   @media (max-width: 1024px) {
     font-size: 16px;
   }
+}
+
+.light {
+  /* Guardian theme — light overrides */
+  --g-bg: #f5f6fa;
+  --g-surface: #ffffff;
+  --g-surface-2: #eef1f7;
+  --g-text: #0f1420;
+  --g-muted: #52607a;
+  --g-faint: #94a3b8;
+  --g-border: rgba(15, 20, 32, 0.08);
+  --g-chip: rgba(15, 20, 32, 0.05);
+  color-scheme: light dark;
 }
 
 #root {
