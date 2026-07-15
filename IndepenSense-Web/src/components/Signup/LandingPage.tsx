@@ -1,8 +1,9 @@
 type LandingPageProps = {
   onAdd: () => void;
+  onLink: () => void;
 };
 
-function LandingPage({ onAdd }: LandingPageProps) {
+function LandingPage({ onAdd, onLink }: LandingPageProps) {
   return (
     <div className="landing-page-component">
       <div className="stack-child-container">
@@ -29,6 +30,9 @@ function LandingPage({ onAdd }: LandingPageProps) {
         </p>
       </div>
       <button onClick={onAdd}>Add assisted user</button>
+      <button className="secondary" onClick={onLink}>
+        Link assisted user
+      </button>
       <div className="tip-container">
         <p>TIP:</p>
         <p>
