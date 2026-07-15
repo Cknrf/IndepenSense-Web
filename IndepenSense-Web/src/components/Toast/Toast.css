@@ -1,7 +1,8 @@
 .toast-container {
   position: fixed;
   top: 1rem;
-  right: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 500000;
   display: flex;
   flex-direction: column;
@@ -16,7 +17,6 @@
   align-items: center;
   background-color: var(--g-surface);
   border: 1px solid #e05656;
-  border-left: 4px solid #e05656;
   border-radius: 0.65rem;
   padding: 0.5rem 0.5rem 0.5rem 0.75rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
