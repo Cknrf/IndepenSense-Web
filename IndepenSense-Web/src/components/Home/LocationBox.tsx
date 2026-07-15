@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router";
+
 type Location = {
   latitude: number;
   longitude: number;
@@ -5,8 +7,12 @@ type Location = {
 };
 
 function LocationBox(location: Location) {
+  const navigate = useNavigate();
   return (
-    <div className="location-container box">
+    <div
+      className="location-container box"
+      onClick={() => navigate("/location")}
+    >
       <div className="top-container">
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -1,4 +1,4 @@
-import { useOutletContext } from "react-router";
+import { useNavigate, useOutletContext } from "react-router";
 import BatteryHealth from "./BatteryHealth";
 import LocationBox from "./LocationBox";
 import ConnectivityStatus from "./ConnectivityStatus";
@@ -9,6 +9,7 @@ import { useAuth } from "../../contexts/AuthContext";
 function HomeSection() {
   const data = useOutletContext<IntervalInformation | null>();
   const { user, activeAssistedUser } = useAuth();
+  const navigate = useNavigate();
   if (!data) return <span>Unable To Retrieve Information</span>;
   const { batteryHealth, internetStatus, latitude, longitude, location } = data;
   const guardianName = user?.name ?? "";
@@ -37,7 +38,10 @@ function HomeSection() {
         <ConnectivityStatus isConnected={internetStatus}></ConnectivityStatus>
 
         <div className="stack-child-container">
-          <div className="alert-container box">
+          <div
+            className="alert-container box"
+            onClick={() => navigate("/alerts")}
+          >
             <div className="top-container">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

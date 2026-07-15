@@ -161,6 +161,16 @@
   overflow: hidden;
 }
 
+.stack-child-container .alert-container.box,
+.stack-child-container .location-container.box {
+  cursor: pointer;
+}
+
+.stack-child-container .alert-container.box:hover,
+.stack-child-container .location-container.box:hover {
+  border-color: #6a5757;
+}
+
 .box .top-container {
   height: 30%;
   width: 100%;
