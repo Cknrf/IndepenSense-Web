@@ -531,7 +531,7 @@
   height: 3.5rem;
   width: 3.5rem;
   border-radius: 50%;
-  background-color: var(--g-surface-2);
+  background-color: var(--g-text);
 }
 
 .contact-section .contact-container .contact-information {
