@@ -3,17 +3,28 @@ import BatteryHealth from "./BatteryHealth";
 import LocationBox from "./LocationBox";
 import ConnectivityStatus from "./ConnectivityStatus";
 import MapBox from "./MapBox";
-import type { IntervalInformation } from "../../layouts/ProtectedLayout";
+import type { OutletData } from "../../layouts/ProtectedLayout";
 import { useAuth } from "../../contexts/AuthContext";
 
+function formatOccuredAt(occuredAt: string) {
+  return new Date(occuredAt).toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 function HomeSection() {
-  const data = useOutletContext<IntervalInformation | null>();
+  const { intervalInformation, alerts } = useOutletContext<OutletData>();
   const { user, activeAssistedUser } = useAuth();
   const navigate = useNavigate();
-  if (!data) return <span>Unable To Retrieve Information</span>;
-  const { batteryHealth, internetStatus, latitude, longitude, location } = data;
+  if (!intervalInformation) return <span>Unable To Retrieve Information</span>;
+  const { batteryHealth, internetStatus, latitude, longitude, location } =
+    intervalInformation;
   const guardianName = user?.name ?? "";
   const assistedName = activeAssistedUser?.name ?? "";
+  const latestAlert = alerts?.[0];
   {
     /* Home Section */
   }
@@ -98,21 +109,33 @@ function HomeSection() {
             </div>
 
             <div className="bottom-container">
-              <div>
-                {" "}
-                Event:
-                <span> Manual Emergency</span>
-              </div>
-              <div>
-                {" "}
-                Location:
-                <span>Maharlika</span>
-              </div>
-              <div>
-                {" "}
-                Timestamp:
-                <span> 4:56 PM </span>
-              </div>
+              {alerts === null ? (
+                <div>
+                  <span>Loading…</span>
+                </div>
+              ) : latestAlert ? (
+                <>
+                  <div>
+                    {" "}
+                    Event:
+                    <span> {latestAlert.eventType}</span>
+                  </div>
+                  <div>
+                    {" "}
+                    Location:
+                    <span> {latestAlert.location}</span>
+                  </div>
+                  <div>
+                    {" "}
+                    Timestamp:
+                    <span> {formatOccuredAt(latestAlert.occuredAt)}</span>
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <span>No alerts yet</span>
+                </div>
+              )}
             </div>
           </div>
 

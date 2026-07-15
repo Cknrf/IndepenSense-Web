@@ -12,6 +12,22 @@ export type IntervalInformation = {
   location: string;
 };
 
+export type AlertLog = {
+  id: number;
+  eventType: string;
+  latitude: number;
+  longitude: number;
+  occuredAt: string;
+  location: string;
+};
+
+export type OutletData = {
+  intervalInformation: IntervalInformation | null;
+  alerts: AlertLog[] | null;
+};
+
+const ALERT_HISTORY_CAP = 5;
+
 const TITLES: Record<string, string> = {
   "/home": "Home",
   "/alerts": "Alert",
@@ -27,6 +43,7 @@ function ProtectedLayout() {
   const hasAssistedUsers = (user?.assistedUsers?.length ?? 0) > 0;
   const [intervalInformation, setIntervalInformation] =
     useState<IntervalInformation | null>(null);
+  const [alerts, setAlerts] = useState<AlertLog[] | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
@@ -50,6 +67,51 @@ function ProtectedLayout() {
     fetchIntervalInformation();
     const intervalID = setInterval(fetchIntervalInformation, 5000);
     return () => clearInterval(intervalID);
+  }, [assistedUserID, setUser]);
+
+  useEffect(() => {
+    setAlerts(null);
+    if (!assistedUserID) return;
+
+    async function fetchInitialAlerts() {
+      const response = await fetch(
+        `http://localhost:3000/web/alerts/${assistedUserID}`,
+        { credentials: "include" },
+      );
+      if (response.status === 401) {
+        setUser(null);
+        return;
+      }
+      if (!response.ok) return;
+      const data = (await response.json()) as AlertLog[];
+      setAlerts(data);
+    }
+
+    fetchInitialAlerts();
+
+    const eventSource = new EventSource(
+      `http://localhost:3000/web/alerts-stream/${assistedUserID}`,
+      { withCredentials: true },
+    );
+
+    eventSource.onmessage = (event) => {
+      try {
+        const alert = JSON.parse(event.data) as AlertLog;
+        setAlerts((prev) =>
+          prev
+            ? [alert, ...prev].slice(0, ALERT_HISTORY_CAP)
+            : [alert],
+        );
+      } catch (error) {
+        console.error("Failed to parse SSE alert:", error);
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error("SSE connection error:", error);
+    };
+
+    return () => eventSource.close();
   }, [assistedUserID, setUser]);
 
   const isOnboarding = pathname.startsWith("/onboarding");
@@ -81,7 +143,11 @@ function ProtectedLayout() {
       </header>
 
       <div className="main-interface">
-        <Outlet context={intervalInformation} />
+        <Outlet
+          context={
+            { intervalInformation, alerts } satisfies OutletData
+          }
+        />
       </div>
 
       {!hideFooter && (
