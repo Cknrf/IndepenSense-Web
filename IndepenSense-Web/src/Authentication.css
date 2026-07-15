@@ -9,8 +9,8 @@
 .header {
   height: 8%;
   width: 100%;
-  background-color: #171d27;
-  border-bottom: 1px solid white;
+  background-color: var(--g-surface-2);
+  border-bottom: 1px solid var(--g-border);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -57,7 +57,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #1c222f;
+  background-color: var(--g-surface);
   border-radius: 50%;
 }
 
@@ -70,7 +70,7 @@
 }
 
 .sign-in-section .message-container .message-information p:nth-child(1) {
-  color: white;
+  color: var(--g-text);
   font-weight: bolder;
   font-size: 1.4rem;
 }
@@ -82,8 +82,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #1c222f;
-  border: 1px solid #343131;
+  background-color: var(--g-surface);
+  border: 1px solid var(--g-border);
   border-radius: 1.5rem;
 }
 
@@ -105,7 +105,7 @@
 }
 
 .sign-in-section .form-container div label {
-  color: white;
+  color: var(--g-text);
 }
 
 .sign-in-section .form-container div input {
@@ -121,7 +121,7 @@
 .sign-in-section .form-container .submit-button {
   height: 2.8rem;
   width: 100%;
-  color: white;
+  color: var(--g-text);
   font-weight: bolder;
   background-color: #fb2c36;
   border-radius: 1rem;
@@ -137,7 +137,7 @@
 }
 
 .sign-in-section .bottom-container {
-  color: white;
+  color: var(--g-text);
 }
 
 .sign-in-section .bottom-container button {
@@ -178,7 +178,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #1c222f;
+  background-color: var(--g-surface);
   border-radius: 50%;
 }
 
@@ -191,7 +191,7 @@
 }
 
 .sign-up-section .message-container .message-information p:nth-child(1) {
-  color: white;
+  color: var(--g-text);
   font-weight: bolder;
   font-size: 1.4rem;
 }
@@ -203,8 +203,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #1c222f;
-  border: 1px solid #343131;
+  background-color: var(--g-surface);
+  border: 1px solid var(--g-border);
   border-radius: 1.5rem;
 }
 
@@ -226,7 +226,7 @@
 }
 
 .sign-up-section .form-container div label {
-  color: white;
+  color: var(--g-text);
 }
 
 .sign-up-section .form-container div input {
@@ -242,7 +242,7 @@
 .sign-up-section .form-container .submit-button {
   height: 2.8rem;
   width: 100%;
-  color: white;
+  color: var(--g-text);
   font-weight: bolder;
   background-color: #fb2c36;
   border-radius: 1rem;
@@ -258,7 +258,7 @@
 }
 
 .sign-up-section .bottom-container {
-  color: white;
+  color: var(--g-text);
 }
 
 .sign-up-section .bottom-container button {
@@ -283,7 +283,7 @@
   height: 5%;
   width: 100%;
   font-size: 2rem;
-  color: white;
+  color: var(--g-text);
 }
 
 .sign-up-section .detail-component:nth-child(1) .message-container {
@@ -310,7 +310,7 @@
 .landing-page-component {
   height: 80%;
   width: 100%;
-  color: white;
+  color: var(--g-text);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -334,7 +334,7 @@
   align-items: center;
   color: red;
   font-size: 2rem;
-  background-color: #1c222f;
+  background-color: var(--g-surface);
   border-radius: 1.5rem;
 }
 
@@ -356,7 +356,7 @@
 }
 
 .landing-page-component .message-container p {
-  color: grey;
+  color: var(--g-muted);
 }
 
 .landing-page-component button {
@@ -366,14 +366,14 @@
   border: none;
   border-radius: 1.5rem;
   font-weight: bold;
-  color: white;
+  color: var(--g-text);
   cursor: pointer;
 }
 
 .landing-page-component button.secondary {
   background-color: rgb(75, 22, 22);
   border: 1px solid red;
-  color: white;
+  color: var(--g-text);
   margin-top: 0.5rem;
 }
 
@@ -385,12 +385,12 @@
   height: auto;
   width: 90%;
   margin-top: 1rem;
-  background-color: #1c222f;
+  background-color: var(--g-surface);
   border-radius: 1.5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 0.5rem;
   padding: 1rem;
-  color: grey;
+  color: var(--g-muted);
 }

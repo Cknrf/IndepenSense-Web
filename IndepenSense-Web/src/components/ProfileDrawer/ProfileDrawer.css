@@ -20,14 +20,14 @@
   height: 100%;
   width: 85%;
   max-width: 24rem;
-  background-color: #171d27;
+  background-color: var(--g-surface-2);
   transform: translateX(100%);
   transition: transform 0.25s ease;
   z-index: 400000;
   display: flex;
   flex-direction: column;
   box-shadow: -4px 0 20px rgba(0, 0, 0, 0.5);
-  color: white;
+  color: var(--g-text);
 }
 
 .profile-drawer.open {
@@ -39,7 +39,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--g-border);
 }
 
 .profile-drawer-header h2 {
@@ -50,22 +50,22 @@
 
 .profile-drawer-close {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid var(--g-border);
   border-radius: 50%;
   width: 2rem;
   height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--g-muted);
   cursor: pointer;
   font-size: 1.1rem;
   padding: 0;
 }
 
 .profile-drawer-close:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  color: white;
+  background-color: var(--g-chip);
+  color: var(--g-text);
 }
 
 .profile-drawer-body {
@@ -106,11 +106,11 @@
 .profile-drawer-identity-text p {
   margin: 0;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--g-muted);
 }
 
 .profile-drawer-details {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: var(--g-chip);
   border-radius: 0.75rem;
   padding: 0.25rem 1rem;
 }
@@ -120,7 +120,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.85rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--g-border);
   gap: 1rem;
 }
 
@@ -129,12 +129,12 @@
 }
 
 .profile-drawer-details-label {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--g-muted);
   font-size: 0.9rem;
 }
 
 .profile-drawer-details-value {
-  color: white;
+  color: var(--g-text);
   font-weight: 600;
   font-size: 0.95rem;
   text-align: right;
@@ -145,7 +145,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--g-muted);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -154,7 +154,7 @@
 }
 
 .profile-drawer-assisted-card {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: var(--g-chip);
   border-radius: 0.75rem;
   padding: 0.85rem 0.85rem 1rem;
   display: flex;
@@ -165,7 +165,7 @@
 .profile-drawer-empty {
   margin: 0.35rem 0.4rem;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--g-muted);
 }
 
 .profile-drawer-assisted-list {
@@ -184,9 +184,9 @@
   align-items: center;
   padding: 0.7rem 0.85rem;
   background-color: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--g-border);
   border-radius: 0.5rem;
-  color: white;
+  color: var(--g-text);
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
@@ -196,7 +196,7 @@
 }
 
 .profile-drawer-assisted-item:hover {
-  background-color: rgba(255, 255, 255, 0.06);
+  background-color: var(--g-chip);
 }
 
 .profile-drawer-assisted-item.active {
@@ -215,7 +215,7 @@
   background-color: #e05656;
   border: none;
   border-radius: 0.6rem;
-  color: white;
+  color: var(--g-text);
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
@@ -227,7 +227,7 @@
 }
 
 .profile-drawer-settings-card {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: var(--g-chip);
   border-radius: 0.75rem;
   padding: 0.25rem 1rem;
 }
@@ -244,12 +244,12 @@
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  color: white;
+  color: var(--g-text);
   font-size: 0.95rem;
 }
 
 .profile-drawer-settings-label svg {
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--g-muted);
   font-size: 1.1rem;
 }
 
@@ -283,7 +283,7 @@
   width: 1rem;
   left: 0.175rem;
   top: 0.175rem;
-  background-color: white;
+  background-color: var(--g-surface-2);
   border-radius: 50%;
   transition: transform 0.2s ease;
 }
@@ -335,13 +335,13 @@
 }
 
 .profile-drawer-confirm-dialog {
-  background-color: #1e2532;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: var(--g-surface);
+  border: 1px solid var(--g-border);
   border-radius: 0.75rem;
   padding: 1.25rem;
   width: 100%;
   max-width: 20rem;
-  color: white;
+  color: var(--g-text);
 }
 
 .profile-drawer-confirm-dialog h3 {
@@ -352,7 +352,7 @@
 
 .profile-drawer-confirm-dialog p {
   margin: 0 0 1.15rem 0;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--g-muted);
   font-size: 0.9rem;
   line-height: 1.4;
 }
@@ -377,19 +377,19 @@
 
 .profile-drawer-confirm-cancel {
   background-color: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--g-border);
+  color: var(--g-muted);
 }
 
 .profile-drawer-confirm-cancel:hover {
-  background-color: rgba(255, 255, 255, 0.06);
-  color: white;
+  background-color: var(--g-chip);
+  color: var(--g-text);
 }
 
 .profile-drawer-confirm-confirm {
   background-color: #e05656;
   border: 1px solid #e05656;
-  color: white;
+  color: var(--g-text);
 }
 
 .profile-drawer-confirm-confirm:hover {
