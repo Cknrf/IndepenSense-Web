@@ -82,7 +82,10 @@ function ProtectedLayout() {
         return;
       }
       if (!response.ok) return;
-      const data = (await response.json()) as IntervalInformation | null;
+      const text = await response.text();
+      const data = text
+        ? (JSON.parse(text) as IntervalInformation | null)
+        : null;
       setIntervalInformation(data);
     }
 
@@ -105,7 +108,8 @@ function ProtectedLayout() {
         return;
       }
       if (!response.ok) return;
-      const data = (await response.json()) as AlertLog[];
+      const text = await response.text();
+      const data = text ? (JSON.parse(text) as AlertLog[]) : [];
       setAlerts(data);
     }
 
@@ -120,9 +124,7 @@ function ProtectedLayout() {
       try {
         const alert = JSON.parse(event.data) as AlertLog;
         setAlerts((prev) =>
-          prev
-            ? [alert, ...prev].slice(0, ALERT_HISTORY_CAP)
-            : [alert],
+          prev ? [alert, ...prev].slice(0, ALERT_HISTORY_CAP) : [alert],
         );
         if (notificationsEnabledRef.current) {
           setToasts((prev) =>
@@ -179,9 +181,7 @@ function ProtectedLayout() {
 
       <div className="main-interface">
         <Outlet
-          context={
-            { intervalInformation, alerts } satisfies OutletData
-          }
+          context={{ intervalInformation, alerts } satisfies OutletData}
         />
       </div>
 
@@ -253,10 +253,7 @@ function ProtectedLayout() {
         </footer>
       )}
 
-      <ProfileDrawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-      />
+      <ProfileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       {toasts.length > 0 && (
         <div className="toast-container">
