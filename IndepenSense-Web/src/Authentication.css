@@ -147,6 +147,44 @@
   font-weight: bold;
 }
 
+
+@media (min-width: 768px) {
+
+  .sign-in-section .stack-container:nth-child(1) {
+    max-width: 540px;
+    gap: 2rem;
+  }
+
+  .sign-in-section .form-container form {
+    padding: 2rem;
+  }
+
+  .sign-in-section .form-container div input {
+    height: 3.2rem;
+    font-size: 1rem;
+  }
+
+  .sign-in-section .form-container .submit-button {
+    height: 3.2rem;
+    font-size: 1rem;
+  }
+
+  .sign-in-section .message-container .icon-container {
+    height: 4rem;
+    width: 4rem;
+    font-size: 2rem;
+  }
+
+  .sign-in-section .message-container .message-information p:nth-child(1) {
+    font-size: 1.8rem;
+  }
+
+  .sign-in-section .message-container .message-information p:nth-child(2) {
+    font-size: 1rem;
+  }
+
+}
+
 /* Sign Up Section */
 
 .sign-up-section {
