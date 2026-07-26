@@ -10,10 +10,10 @@
   height: 8%;
   width: 100%;
   background-color: var(--g-surface-2);
-  border-bottom: 1px var(--g-border);
+  border-bottom: 1px solid var(--g-border);
   display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
+  justify-content: center;
+  align-items: center;
 }
 
 .main-interface {
