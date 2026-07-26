@@ -8,14 +8,8 @@
   flex-direction: column;
 }
 
-.header {
-  height: 8%;
-  width: 100%;
-  background-color: var(--g-surface-2);
-  border-bottom: 1px solid var(--g-border);
-  display: flex;
+.header.header-centered {
   justify-content: center;
-  align-items: center;
 }
 
 .main-interface {

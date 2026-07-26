@@ -7,7 +7,7 @@ function AuthLayout() {
 
   return (
     <div className="main-container">
-      <header className="header">
+      <header className="header header-centered">
         <h2>{title}</h2>
       </header>
       <div className="main-interface">
