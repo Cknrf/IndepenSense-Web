@@ -276,7 +276,7 @@
   background-color: var(--g-surface);
   border: 1px solid var(--g-border);
   border-radius: 1.5rem;
-  overflow-y: hidden;
+  overflow-y: scroll;
 }
 
 .alert-section .stack-container:nth-child(2) .alert-info-container {
