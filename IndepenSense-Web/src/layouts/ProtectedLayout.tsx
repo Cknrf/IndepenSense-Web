@@ -5,6 +5,7 @@ import { useNotifications } from "../contexts/NotificationsContext";
 import ProfileDrawer from "../components/ProfileDrawer/ProfileDrawer";
 import Toast from "../components/Toast/Toast";
 import { playAlertSound } from "../utils/sound";
+import { API_BASE } from "../utils/api";
 import "../App.css";
 
 export type IntervalInformation = {
@@ -74,7 +75,7 @@ function ProtectedLayout() {
 
     async function fetchIntervalInformation() {
       const response = await fetch(
-        `http://localhost:3000/web/interval-information/${assistedUserID}`,
+        `${API_BASE}/interval-information/${assistedUserID}`,
         { credentials: "include" },
       );
       if (response.status === 401) {
@@ -100,7 +101,7 @@ function ProtectedLayout() {
 
     async function fetchInitialAlerts() {
       const response = await fetch(
-        `http://localhost:3000/web/alerts/${assistedUserID}`,
+        `${API_BASE}/alerts/${assistedUserID}`,
         { credentials: "include" },
       );
       if (response.status === 401) {
@@ -116,7 +117,7 @@ function ProtectedLayout() {
     fetchInitialAlerts();
 
     const eventSource = new EventSource(
-      `http://localhost:3000/web/alerts-stream/${assistedUserID}`,
+      `${API_BASE}/alerts-stream/${assistedUserID}`,
       { withCredentials: true },
     );
 

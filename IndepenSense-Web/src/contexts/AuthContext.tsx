@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
+import { API_BASE } from "../utils/api";
 
 export type AssistedUserSummary = {
   id: number;
@@ -32,7 +33,6 @@ type AuthContextValue = {
   setUser: Dispatch<SetStateAction<Guardian | null>>;
 };
 
-const API_BASE = "http://localhost:3000/web";
 const ACTIVE_ASSISTED_USER_KEY = "indepensense.activeAssistedUserID";
 
 const AuthContext = createContext<AuthContextValue | null>(null);

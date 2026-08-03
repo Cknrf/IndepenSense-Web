@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import type { Guardian } from "./Signup";
+import { API_BASE } from "../../utils/api";
 
 type SetCredential = {
   guardian: Guardian;
@@ -19,9 +20,10 @@ function Credential({ guardian, onSetCredential, onNext }: SetCredential) {
 
   async function confirmDevice(uuid: string) {
     const response = await fetch(
-      "http://localhost:3000/web/device-confirmation",
+      `${API_BASE}/device-confirmation`,
       {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -43,9 +45,10 @@ function Credential({ guardian, onSetCredential, onNext }: SetCredential) {
 
   async function doesUsernameExist(name: string) {
     const response = await fetch(
-      "http://localhost:3000/web/does-username-exist/",
+      `${API_BASE}/does-username-exist`,
       {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

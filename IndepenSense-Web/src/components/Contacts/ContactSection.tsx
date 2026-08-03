@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
+import { API_BASE } from "../../utils/api";
 import MessageContainer from "./Message";
 import ContactSummary from "./ContactSummary";
 import ContactInfo from "./ContactInfo";
@@ -22,7 +23,7 @@ function ContactSection() {
 
     async function fetchContacts() {
       const response = await fetch(
-        `http://localhost:3000/web/contacts/${assistedUserID}`,
+        `${API_BASE}/contacts/${assistedUserID}`,
         { credentials: "include" },
       );
       if (response.status === 401) {

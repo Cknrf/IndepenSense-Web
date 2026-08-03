@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import type { AssistedUserSummary } from "../../contexts/AuthContext";
+import { API_BASE } from "../../utils/api";
 
 type LinkAssistedUserProps = {
   onDone: () => void;
@@ -15,7 +16,7 @@ function LinkAssistedUser({ onDone }: LinkAssistedUserProps) {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/web/link-assisted-user-account",
+        `${API_BASE}/link-assisted-user-account`,
         {
           method: "POST",
           credentials: "include",

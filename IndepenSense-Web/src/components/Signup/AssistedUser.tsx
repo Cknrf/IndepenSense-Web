@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import type { AssistedUserSummary } from "../../contexts/AuthContext";
+import { API_BASE } from "../../utils/api";
 
 type AssistedUserProps = {
   onDone: () => void;
@@ -29,7 +30,7 @@ function AssistedUser({ onDone }: AssistedUserProps) {
 
   async function createAssistedUser(): Promise<AssistedUserSummary> {
     const response = await fetch(
-      "http://localhost:3000/web/create-assisted-user-account/",
+      `${API_BASE}/create-assisted-user-account`,
       {
         method: "POST",
         credentials: "include",

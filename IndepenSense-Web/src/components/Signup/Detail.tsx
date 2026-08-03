@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router";
 import type { Guardian } from "./Signup";
+import { API_BASE } from "../../utils/api";
 
 type SetDetail = {
   guardian: Guardian;
@@ -21,9 +22,10 @@ function Detail({ guardian, onSetCredential, onBack }: SetDetail) {
 
   async function createGuardian() {
     const response = await fetch(
-      "http://localhost:3000/web/create-guardian-account/",
+      `${API_BASE}/create-guardian-account`,
       {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
