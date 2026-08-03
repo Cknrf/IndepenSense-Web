@@ -59,6 +59,12 @@ body {
   margin: 0;
 }
 
+input,
+textarea,
+select {
+  font: inherit;
+}
+
 h1,
 h2 {
   font-family: var(--heading);
