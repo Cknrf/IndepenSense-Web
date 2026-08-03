@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">IndepenSense</string>
+    <string name="title_activity_main">IndepenSense</string>
+    <string name="package_name">com.indepensense.app</string>
+    <string name="custom_url_scheme">com.indepensense.app</string>
+</resources>
