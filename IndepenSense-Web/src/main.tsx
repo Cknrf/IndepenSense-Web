@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import "./index.css";
+import { initNativeShell } from "./utils/native";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { NotificationsProvider } from "./contexts/NotificationsContext";
@@ -17,6 +18,8 @@ import HomeSection from "./components/Home/HomeSection";
 import AlertSection from "./components/Alert/AlertSection";
 import LocationSection from "./components/Location/LocationSection";
 import ContactSection from "./components/Contacts/ContactSection";
+
+initNativeShell();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
