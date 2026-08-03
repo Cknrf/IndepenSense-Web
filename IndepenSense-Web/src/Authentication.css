@@ -93,6 +93,10 @@
   gap: 1.5rem;
 }
 
+.sign-in-section .form-container form > * {
+  flex-shrink: 0;
+}
+
 .sign-in-section .form-container div {
   width: 100%;
   display: flex;
@@ -212,6 +216,10 @@
   justify-content: center;
   padding: 1rem;
   gap: 1.5rem;
+}
+
+.sign-up-section .form-container form > * {
+  flex-shrink: 0;
 }
 
 .sign-up-section .form-container div {
