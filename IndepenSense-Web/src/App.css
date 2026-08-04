@@ -1,9 +1,7 @@
 .main-container {
   background-color: var(--color-bg);
-  height: 100%;
-  width: 100%;
-  max-width: 430px;
-  margin: 0 auto;
+  width: min(100vw, calc(100dvh * 430 / 923));
+  height: min(100dvh, calc(100vw * 923 / 430));
   display: flex;
   flex-direction: column;
 }
