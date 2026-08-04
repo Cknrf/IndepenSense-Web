@@ -72,17 +72,17 @@ function LocationBox(location: Location) {
         <div>
           {" "}
           Latitude:
-          <span>{location.latitude}</span>
+          <span> {location.latitude}</span>
         </div>
         <div>
           {" "}
           Longitude:
-          <span>{location.longitude}</span>
+          <span> {location.longitude}</span>
         </div>
         <div>
           {" "}
           Location:
-          <span>{location.location}</span>
+          <span> {location.location}</span>
         </div>
       </div>
     </div>
