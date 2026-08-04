@@ -1,9 +1,16 @@
 .main-container {
   background-color: var(--color-bg);
-  width: min(100vw, calc(100dvh * 430 / 923));
-  height: min(100dvh, calc(100vw * 923 / 430));
+  width: 100vw;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
+}
+
+@media (min-width: 431px) {
+  .main-container {
+    width: min(100vw, calc(100dvh * 430 / 923));
+    height: min(100dvh, calc(100vw * 923 / 430));
+  }
 }
 
 .section {
