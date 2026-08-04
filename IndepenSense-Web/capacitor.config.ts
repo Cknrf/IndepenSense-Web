@@ -9,7 +9,7 @@ const config: CapacitorConfig = {
   webDir: "dist",
   backgroundColor: BACKGROUND_COLOR,
   server: {
-    url: "https://indepensense-web-production.up.railway.app",
+    url: "https://indepensense.maendou.com",
     cleartext: false,
     errorPath: "offline.html",
   },
