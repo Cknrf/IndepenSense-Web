@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import type { ReactNode } from "react";
 
 type NotificationsContextValue = {
@@ -22,8 +28,16 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, String(notifications));
   }, [notifications]);
 
-  const setNotifications = (value: boolean) => setNotificationsState(value);
-  const toggleNotifications = () => setNotificationsState((prev) => !prev);
+  // Memoized: ProtectedLayout's push registration effect depends on these
+  // identities, and re-running it would churn native FCM registration.
+  const setNotifications = useCallback(
+    (value: boolean) => setNotificationsState(value),
+    [],
+  );
+  const toggleNotifications = useCallback(
+    () => setNotificationsState((prev) => !prev),
+    [],
+  );
 
   return (
     <NotificationsContext.Provider

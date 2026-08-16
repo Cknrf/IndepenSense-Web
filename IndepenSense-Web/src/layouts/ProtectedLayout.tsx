@@ -1,11 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 import { useNotifications } from "../contexts/NotificationsContext";
 import ProfileDrawer from "../components/ProfileDrawer/ProfileDrawer";
 import Toast from "../components/Toast/Toast";
 import { playAlertSound } from "../utils/sound";
 import { API_BASE } from "../utils/api";
+import {
+  disablePush,
+  enablePush,
+  isPushSupported,
+  setPushHandlers,
+} from "../utils/push";
 import "../App.css";
 
 export type IntervalInformation = {
@@ -48,10 +54,15 @@ type ActiveToast = {
 
 const TOAST_CAP = 3;
 
+/** How many alert IDs to remember for cross-transport toast dedup. */
+const SEEN_ALERT_CAP = 100;
+
 function ProtectedLayout() {
   const { pathname } = useLocation();
-  const { user, activeAssistedUser, setUser } = useAuth();
-  const { notifications } = useNotifications();
+  const navigate = useNavigate();
+  const { user, activeAssistedUser, setUser, setActiveAssistedUserID } =
+    useAuth();
+  const { notifications, setNotifications } = useNotifications();
   const assistedUserID = activeAssistedUser?.id;
   const hasAssistedUsers = (user?.assistedUsers?.length ?? 0) > 0;
   const [intervalInformation, setIntervalInformation] =
@@ -68,6 +79,40 @@ function ProtectedLayout() {
   const dismissToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
+
+  // An alert can reach us twice: over SSE while foregrounded, and as an FCM
+  // push. Whichever lands first wins; the other is dropped.
+  const seenAlertIDs = useRef<Set<number>>(new Set());
+
+  const markAlertSeen = useCallback((alertID: number): boolean => {
+    const seen = seenAlertIDs.current;
+    if (seen.has(alertID)) return false;
+    seen.add(alertID);
+    if (seen.size > SEEN_ALERT_CAP) {
+      const oldest = seen.values().next().value;
+      if (oldest !== undefined) seen.delete(oldest);
+    }
+    return true;
+  }, []);
+
+  const showAlertToast = useCallback(
+    (alert: { id: number; eventType: string; location: string }) => {
+      if (!notificationsEnabledRef.current) return;
+      if (!markAlertSeen(alert.id)) return;
+      setToasts((prev) =>
+        [
+          ...prev,
+          {
+            id: String(alert.id),
+            eventType: alert.eventType,
+            location: alert.location,
+          },
+        ].slice(-TOAST_CAP),
+      );
+      playAlertSound();
+    },
+    [markAlertSeen],
+  );
 
   useEffect(() => {
     setIntervalInformation(null);
@@ -127,19 +172,7 @@ function ProtectedLayout() {
         setAlerts((prev) =>
           prev ? [alert, ...prev].slice(0, ALERT_HISTORY_CAP) : [alert],
         );
-        if (notificationsEnabledRef.current) {
-          setToasts((prev) =>
-            [
-              ...prev,
-              {
-                id: `${alert.id}-${Date.now()}`,
-                eventType: alert.eventType,
-                location: alert.location,
-              },
-            ].slice(-TOAST_CAP),
-          );
-          playAlertSound();
-        }
+        showAlertToast(alert);
       } catch (error) {
         console.error("Failed to parse SSE alert:", error);
       }
@@ -150,7 +183,53 @@ function ProtectedLayout() {
     };
 
     return () => eventSource.close();
-  }, [assistedUserID, setUser]);
+  }, [assistedUserID, setUser, showAlertToast]);
+
+  // Keep FCM registration in step with the Notifications toggle. This lives
+  // here rather than in NotificationsProvider because registration needs an
+  // authenticated session, and ProtectedLayout only renders when there is one.
+  useEffect(() => {
+    if (!isPushSupported()) return;
+
+    let cancelled = false;
+
+    if (notifications) {
+      enablePush().then((result) => {
+        // The OS permission was refused, so the toggle would be lying. Turning
+        // it off also stops the in-app toasts, which is the honest reading of
+        // "notifications are off" for this device.
+        if (!cancelled && result === "denied") setNotifications(false);
+      });
+    } else {
+      void disablePush();
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [notifications, setNotifications]);
+
+  // Route delivered pushes into the same UI the SSE stream feeds.
+  useEffect(() => {
+    if (!isPushSupported()) return;
+
+    setPushHandlers({
+      onForegroundAlert: (data) =>
+        showAlertToast({
+          id: data.alertId,
+          eventType: data.eventType,
+          location: data.location,
+        }),
+      onNotificationTap: (data) => {
+        // Already shown by the OS — don't toast it again once SSE reconnects.
+        markAlertSeen(data.alertId);
+        setActiveAssistedUserID(data.assistedUserId);
+        navigate("/alerts");
+      },
+    });
+
+    return () => setPushHandlers({});
+  }, [showAlertToast, markAlertSeen, setActiveAssistedUserID, navigate]);
 
   const isOnboarding = pathname.startsWith("/onboarding");
   const hideFooter = isOnboarding && !hasAssistedUsers;

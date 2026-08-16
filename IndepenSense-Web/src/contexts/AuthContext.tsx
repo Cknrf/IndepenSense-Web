@@ -7,6 +7,7 @@ import {
 } from "react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { API_BASE } from "../utils/api";
+import { disablePush } from "../utils/push";
 
 export type AssistedUserSummary = {
   id: number;
@@ -60,8 +61,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [activeAssistedUserID]);
 
-  const setActiveAssistedUserID = (id: number) =>
-    setActiveAssistedUserIDState(id);
+  // Memoized: the push notification tap handler depends on this identity.
+  const setActiveAssistedUserID = useCallback(
+    (id: number) => setActiveAssistedUserIDState(id),
+    [],
+  );
 
   const activeAssistedUser =
     user?.assistedUsers?.find((u) => u.id === activeAssistedUserID) ??
@@ -107,6 +111,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    // Before the session cookie is invalidated, or the DELETE is rejected and
+    // this device keeps receiving the previous guardian's alerts.
+    await disablePush();
+
     try {
       await fetch(`${API_BASE}/signout`, {
         method: "POST",

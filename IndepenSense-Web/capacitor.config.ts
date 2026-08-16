@@ -18,6 +18,11 @@ const config: CapacitorConfig = {
     allowMixedContent: false,
   },
   plugins: {
+    PushNotifications: {
+      // Empty: a push arriving while the app is foregrounded must not raise an
+      // OS notification, because ProtectedLayout already renders it as a Toast.
+      presentationOptions: [],
+    },
     Keyboard: {
       resize: KeyboardResize.Native,
       resizeOnFullScreen: true,

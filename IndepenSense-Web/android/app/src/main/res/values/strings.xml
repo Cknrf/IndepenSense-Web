@@ -4,4 +4,5 @@
     <string name="title_activity_main">IndepenSense</string>
     <string name="package_name">com.indepensense.app</string>
     <string name="custom_url_scheme">com.indepensense.app</string>
+    <string name="alert_notification_channel_id">indepensense-alerts</string>
 </resources>
