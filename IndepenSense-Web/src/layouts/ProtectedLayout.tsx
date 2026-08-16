@@ -9,6 +9,7 @@ import { API_BASE } from "../utils/api";
 import {
   disablePush,
   enablePush,
+  isNativePush,
   isPushSupported,
   setPushHandlers,
 } from "../utils/push";
@@ -195,10 +196,12 @@ function ProtectedLayout() {
 
     if (notifications) {
       enablePush().then((result) => {
-        // The OS permission was refused, so the toggle would be lying. Turning
-        // it off also stops the in-app toasts, which is the honest reading of
-        // "notifications are off" for this device.
-        if (!cancelled && result === "denied") setNotifications(false);
+        if (cancelled || result !== "denied") return;
+        // On native the toggle covers every alert surface, so a refused OS
+        // permission makes it a lie — switch it off. On web it additionally
+        // gates the in-app SSE toasts, which still work without the browser
+        // notification permission, so leave the toggle alone there.
+        if (isNativePush()) setNotifications(false);
       });
     } else {
       void disablePush();

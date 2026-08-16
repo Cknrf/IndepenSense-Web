@@ -1,0 +1,19 @@
+{
+  "name": "IndepenSense",
+  "short_name": "IndepenSense",
+  "description": "Stay aware of the person you assist — alerts, location, and contacts.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#121621",
+  "theme_color": "#121621",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
