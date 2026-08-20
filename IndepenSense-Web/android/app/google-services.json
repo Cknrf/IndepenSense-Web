@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "439818020534",
+    "project_id": "indepensense-4c7ed",
+    "storage_bucket": "indepensense-4c7ed.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:439818020534:android:3d5155939e3b87ad5ce817",
+        "android_client_info": {
+          "package_name": "com.indepensense.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXrR82O0ArGo0T0Gkh4qTgD7FV5SYB-tQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
