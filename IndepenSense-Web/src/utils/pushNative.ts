@@ -43,6 +43,9 @@ async function attachListeners(): Promise<void> {
   // Fires on first register() and again whenever FCM rotates the token.
   await PushNotifications.addListener("registration", (token) => {
     currentToken = token.value;
+    // TEMPORARY: the only way to read the token until the backend register
+    // endpoint exists. Remove once /web/push/register is live.
+    console.log("FCM token:", token.value);
     if (!registrationWanted) return;
     postToken("fcm", token.value).catch((error) =>
       console.error("Failed to sync push token:", error),
