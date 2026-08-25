@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import type { Guardian } from "./Signup";
 import { API_BASE } from "../../utils/api";
 import { useAuth } from "../../contexts/AuthContext";
+import BackButton from "./BackButton";
 
 type SetDetail = {
   guardian: Guardian;
@@ -78,21 +79,7 @@ function Detail({ guardian, onSetCredential, onBack }: SetDetail) {
 
   return (
     <div className="stack-container detail-component">
-      <div className="back-button-container" onClick={onBack}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="0.5em"
-          height="1em"
-          viewBox="0 0 12 24"
-        >
-          <path d="M0 0h12v24H0z" fill="none" />
-          <path
-            fill="currentColor"
-            fillRule="evenodd"
-            d="m3.343 12l7.071 7.071L9 20.485l-7.778-7.778a1 1 0 0 1 0-1.414L9 3.515l1.414 1.414z"
-          />
-        </svg>
-      </div>
+      <BackButton onBack={onBack} label="Back to credentials" />
       <div className="message-container">
         <div className="icon-container">
           <svg

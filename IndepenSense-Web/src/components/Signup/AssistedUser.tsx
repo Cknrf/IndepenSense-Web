@@ -3,9 +3,11 @@ import { useAuth } from "../../contexts/AuthContext";
 import type { AssistedUserSummary } from "../../contexts/AuthContext";
 import { API_BASE } from "../../utils/api";
 import { withAssistedUser } from "../../utils/invites";
+import BackButton from "./BackButton";
 
 type AssistedUserProps = {
   onDone: () => void;
+  onBack: () => void;
 };
 
 /**
@@ -15,7 +17,7 @@ type AssistedUserProps = {
 const INVALID_PAIRING_CODE_MESSAGE =
   "That code isn't valid, or this device has already been set up by someone else.";
 
-function AssistedUser({ onDone }: AssistedUserProps) {
+function AssistedUser({ onDone, onBack }: AssistedUserProps) {
   const { setUser } = useAuth();
   const [name, setName] = useState("");
   const [pairingCode, setPairingCode] = useState("");
@@ -60,6 +62,7 @@ function AssistedUser({ onDone }: AssistedUserProps) {
 
   return (
     <div className="stack-container assisted-user-component">
+      <BackButton onBack={onBack} label="Back to setup options" />
       <div className="message-container">
         <div className="icon-container">
           <svg

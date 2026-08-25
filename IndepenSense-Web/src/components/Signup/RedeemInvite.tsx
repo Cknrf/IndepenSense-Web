@@ -7,9 +7,11 @@ import {
   redeemInvite,
   withAssistedUser,
 } from "../../utils/invites";
+import BackButton from "./BackButton";
 
 type RedeemInviteProps = {
   onDone: () => void;
+  onBack: () => void;
 };
 
 /**
@@ -17,7 +19,7 @@ type RedeemInviteProps = {
  * The link route (/invite/:token) is the same redemption with the token filled
  * in already.
  */
-function RedeemInvite({ onDone }: RedeemInviteProps) {
+function RedeemInvite({ onDone, onBack }: RedeemInviteProps) {
   const { setUser, setActiveAssistedUserID } = useAuth();
   const [token, setToken] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -54,6 +56,7 @@ function RedeemInvite({ onDone }: RedeemInviteProps) {
 
   return (
     <div className="stack-container assisted-user-component">
+      <BackButton onBack={onBack} label="Back to setup options" />
       <div className="message-container">
         <div className="icon-container">
           <svg

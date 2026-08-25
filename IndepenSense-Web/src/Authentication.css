@@ -255,6 +255,12 @@
   width: 100%;
   font-size: 2rem;
   color: var(--g-text);
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
 /* Assisted User Component */

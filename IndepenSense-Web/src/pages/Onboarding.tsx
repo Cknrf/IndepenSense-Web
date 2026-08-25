@@ -17,9 +17,17 @@ function Onboarding() {
         />
       )}
       {step === "create" && (
-        <AssistedUser onDone={() => navigate("/home")} />
+        <AssistedUser
+          onDone={() => navigate("/home")}
+          onBack={() => setStep("landing")}
+        />
       )}
-      {step === "link" && <RedeemInvite onDone={() => navigate("/home")} />}
+      {step === "link" && (
+        <RedeemInvite
+          onDone={() => navigate("/home")}
+          onBack={() => setStep("landing")}
+        />
+      )}
     </div>
   );
 }
