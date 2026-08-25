@@ -16,13 +16,24 @@
   display: flex;
   align-items: center;
   background-color: var(--g-surface);
-  border: 1px solid #e05656;
+  border: 1px solid var(--toast-accent);
   border-radius: 0.65rem;
   padding: 0.5rem 0.5rem 0.5rem 0.75rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   pointer-events: auto;
   animation: toast-in 0.2s ease;
   color: var(--g-text);
+}
+
+.toast.alert {
+  --toast-accent: #e05656;
+  --toast-accent-wash: rgba(224, 86, 86, 0.12);
+}
+
+/* An account notice, not an emergency — it must not read as one at a glance. */
+.toast.info {
+  --toast-accent: #5b8def;
+  --toast-accent-wash: rgba(91, 141, 239, 0.12);
 }
 
 @keyframes toast-in {
@@ -79,9 +90,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #e05656;
+  color: var(--toast-accent);
   font-size: 1.4rem;
-  background-color: rgba(224, 86, 86, 0.12);
+  background-color: var(--toast-accent-wash);
   border-radius: 0.4rem;
 }
 
@@ -97,7 +108,7 @@
   color: var(--g-text);
 }
 
-.toast-location {
+.toast-message {
   margin: 0;
   font-size: 0.85rem;
   color: var(--g-muted);

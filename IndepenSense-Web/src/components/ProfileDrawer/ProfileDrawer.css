@@ -153,6 +153,29 @@
   padding: 0 0.25rem;
 }
 
+.profile-drawer-section-action {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  padding: 0.15rem 0.25rem;
+  color: var(--g-muted);
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.profile-drawer-section-action:hover {
+  background-color: var(--g-chip);
+  color: var(--g-text);
+}
+
 .profile-drawer-assisted-card {
   background-color: var(--g-chip);
   border-radius: 0.75rem;
@@ -175,6 +198,69 @@
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+}
+
+.profile-drawer-assisted-list > li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/*
+ * Who else gained access, and when. Indented under the assisted user it
+ * concerns, because "Ana was added" is meaningless without knowing to whom.
+ */
+.profile-drawer-activity-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  border-left: 2px solid #5b8def;
+  margin-left: 0.5rem;
+}
+
+.profile-drawer-activity-list > li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.profile-drawer-activity-name {
+  color: var(--g-text);
+}
+
+.profile-drawer-activity-time {
+  color: var(--g-faint);
+  white-space: nowrap;
+}
+
+.profile-drawer-invite-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
+  padding: 0.5rem 0.85rem;
+  background-color: transparent;
+  border: 1px dashed var(--g-border);
+  border-radius: 0.5rem;
+  color: var(--g-muted);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.profile-drawer-invite-button:hover {
+  background-color: var(--g-chip);
+  color: var(--g-text);
 }
 
 .profile-drawer-assisted-item {
@@ -394,4 +480,90 @@
 
 .profile-drawer-confirm-confirm:hover {
   background-color: #c94848;
+}
+
+/* Invite dialog */
+
+.invite-dialog {
+  max-width: 22rem;
+}
+
+.invite-dialog-error {
+  color: #e05656;
+}
+
+.invite-dialog-field {
+  margin-bottom: 0.85rem;
+}
+
+.invite-dialog-label {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--g-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.invite-dialog-value-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.4rem;
+}
+
+.invite-dialog-value {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.6rem;
+  background-color: var(--g-chip);
+  border: 1px solid var(--g-border);
+  border-radius: 0.4rem;
+  color: var(--g-text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+}
+
+/* The token must stay readable in full — it is never shown again. */
+.invite-dialog-code {
+  letter-spacing: 0.06em;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.invite-dialog-link {
+  overflow-wrap: anywhere;
+}
+
+.invite-dialog-copy {
+  flex-shrink: 0;
+  padding: 0 0.75rem;
+  background-color: transparent;
+  border: 1px solid var(--g-border);
+  border-radius: 0.4rem;
+  color: var(--g-text);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.invite-dialog-copy:hover {
+  background-color: var(--g-chip);
+}
+
+.profile-drawer-confirm-dialog p.invite-dialog-expiry {
+  margin-bottom: 0.5rem;
+  color: var(--g-text);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.profile-drawer-confirm-dialog p.invite-dialog-expiry.expired {
+  color: #e05656;
+}
+
+.profile-drawer-confirm-dialog p.invite-dialog-warning {
+  font-size: 0.8rem;
 }

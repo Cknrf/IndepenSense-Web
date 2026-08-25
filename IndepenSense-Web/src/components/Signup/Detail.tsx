@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import type { Guardian } from "./Signup";
 import { API_BASE } from "../../utils/api";
+import { useAuth } from "../../contexts/AuthContext";
 
 type SetDetail = {
   guardian: Guardian;
@@ -10,6 +11,7 @@ type SetDetail = {
 
 function Detail({ guardian, onSetCredential, onBack }: SetDetail) {
   const navigate = useNavigate();
+  const { signIn } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -53,10 +55,24 @@ function Detail({ guardian, onSetCredential, onBack }: SetDetail) {
 
     try {
       await createGuardian();
-      navigate("/signin");
     } catch (error) {
       console.error("createGuardian failed:", error);
       alert("Something went wrong while creating account");
+      return;
+    }
+
+    // Sign in with the credentials already in hand rather than sending them to
+    // the sign-in screen. An invitee reaches this page mid-redemption, and the
+    // invite expires in 30 minutes — a manual sign-in is a step they can't
+    // afford. GuestOnly does the routing from here, invite or not.
+    try {
+      await signIn(guardian.username, guardian.password);
+    } catch (error) {
+      // The account does exist at this point, so say so rather than implying
+      // the sign-up failed.
+      console.error("Sign in after sign up failed:", error);
+      alert("Your account was created. Please sign in.");
+      navigate("/signin");
     }
   };
 

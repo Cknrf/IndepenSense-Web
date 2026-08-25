@@ -3,7 +3,11 @@ import "../Authentication.css";
 
 function AuthLayout() {
   const { pathname } = useLocation();
-  const title = pathname === "/signup" ? "Sign Up" : "Sign In";
+  const title = pathname.startsWith("/invite")
+    ? "Invitation"
+    : pathname === "/signup"
+      ? "Sign Up"
+      : "Sign In";
 
   return (
     <div className="main-container">

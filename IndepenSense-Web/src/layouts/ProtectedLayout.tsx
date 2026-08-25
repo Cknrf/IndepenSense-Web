@@ -13,6 +13,14 @@ import {
   isPushSupported,
   setPushHandlers,
 } from "../utils/push";
+import type { PushGuardianAddedData } from "../utils/push";
+import {
+  addGuardianEvent,
+  guardianEventID,
+  loadGuardianEvents,
+  saveGuardianEvents,
+  type GuardianEvent,
+} from "../utils/guardianEvents";
 import "../App.css";
 
 export type IntervalInformation = {
@@ -49,8 +57,11 @@ const TITLES: Record<string, string> = {
 
 type ActiveToast = {
   id: string;
-  eventType: string;
-  location: string;
+  kind: "alert" | "info";
+  title: string;
+  body: string;
+  /** Where tapping the toast should take the user. */
+  target: "alerts" | "profile";
 };
 
 const TOAST_CAP = 3;
@@ -71,6 +82,18 @@ function ProtectedLayout() {
   const [alerts, setAlerts] = useState<AlertLog[] | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [toasts, setToasts] = useState<ActiveToast[]>([]);
+  const [guardianEvents, setGuardianEvents] =
+    useState<GuardianEvent[]>(loadGuardianEvents);
+
+  // Seeded from the persisted list so a push already recorded on a previous
+  // page load isn't announced again after a reload.
+  const seenGuardianEventIDs = useRef<Set<string>>(
+    new Set(guardianEvents.map((event) => event.id)),
+  );
+
+  useEffect(() => {
+    saveGuardianEvents(guardianEvents);
+  }, [guardianEvents]);
 
   const notificationsEnabledRef = useRef(notifications);
   useEffect(() => {
@@ -96,23 +119,63 @@ function ProtectedLayout() {
     return true;
   }, []);
 
+  const pushToast = useCallback((toast: ActiveToast) => {
+    setToasts((prev) => [...prev, toast].slice(-TOAST_CAP));
+  }, []);
+
   const showAlertToast = useCallback(
     (alert: { id: number; eventType: string; location: string }) => {
       if (!notificationsEnabledRef.current) return;
       if (!markAlertSeen(alert.id)) return;
-      setToasts((prev) =>
-        [
-          ...prev,
-          {
-            id: String(alert.id),
-            eventType: alert.eventType,
-            location: alert.location,
-          },
-        ].slice(-TOAST_CAP),
-      );
+      pushToast({
+        id: `alert-${alert.id}`,
+        kind: "alert",
+        title: alert.eventType,
+        body: alert.location,
+        target: "alerts",
+      });
       playAlertSound();
     },
-    [markAlertSeen],
+    [markAlertSeen, pushToast],
+  );
+
+  /**
+   * Record that someone else gained access. Deliberately not gated on the
+   * Notifications toggle: this is the signal by which a guardian notices an
+   * invite they didn't expect being used, so it is not theirs to mute.
+   */
+  const recordGuardianAdded = useCallback(
+    (data: PushGuardianAddedData) => {
+      const id = guardianEventID(data.assistedUserId, data.guardianName);
+
+      // A tap arrives after the same push was already handled on receipt.
+      // Checked against a ref, not state, so two pushes in one tick can't both
+      // read "unseen" — the same reason seenAlertIDs is a ref.
+      const seen = seenGuardianEventIDs.current;
+      if (seen.has(id)) return;
+      seen.add(id);
+
+      setGuardianEvents((prev) =>
+        addGuardianEvent(prev, {
+          id,
+          assistedUserId: data.assistedUserId,
+          assistedUserName: data.assistedUserName,
+          guardianName: data.guardianName,
+          receivedAt: new Date().toISOString(),
+        }),
+      );
+
+      pushToast({
+        id: `guardian-${id}`,
+        kind: "info",
+        title: "New guardian added",
+        body: data.assistedUserName
+          ? `${data.guardianName} can now see ${data.assistedUserName}.`
+          : `${data.guardianName} now has access.`,
+        target: "profile",
+      });
+    },
+    [pushToast],
   );
 
   useEffect(() => {
@@ -217,22 +280,35 @@ function ProtectedLayout() {
     if (!isPushSupported()) return;
 
     setPushHandlers({
-      onForegroundAlert: (data) =>
+      onAlert: (data, delivery) => {
+        if (delivery === "tapped") {
+          // Already shown by the OS — don't toast it again once SSE reconnects.
+          markAlertSeen(data.alertId);
+          setActiveAssistedUserID(data.assistedUserId);
+          navigate("/alerts");
+          return;
+        }
         showAlertToast({
           id: data.alertId,
           eventType: data.eventType,
           location: data.location,
-        }),
-      onNotificationTap: (data) => {
-        // Already shown by the OS — don't toast it again once SSE reconnects.
-        markAlertSeen(data.alertId);
-        setActiveAssistedUserID(data.assistedUserId);
-        navigate("/alerts");
+        });
+      },
+      onGuardianAdded: (data, delivery) => {
+        recordGuardianAdded(data);
+        // The drawer is where the record lives, so a tap must land there.
+        if (delivery === "tapped") setDrawerOpen(true);
       },
     });
 
     return () => setPushHandlers({});
-  }, [showAlertToast, markAlertSeen, setActiveAssistedUserID, navigate]);
+  }, [
+    showAlertToast,
+    recordGuardianAdded,
+    markAlertSeen,
+    setActiveAssistedUserID,
+    navigate,
+  ]);
 
   const isOnboarding = pathname.startsWith("/onboarding");
   const hideFooter = isOnboarding && !hasAssistedUsers;
@@ -336,7 +412,12 @@ function ProtectedLayout() {
         </footer>
       )}
 
-      <ProfileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <ProfileDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        guardianEvents={guardianEvents}
+        onClearGuardianEvents={() => setGuardianEvents([])}
+      />
 
       {toasts.length > 0 && (
         <div className="toast-container">
@@ -344,9 +425,12 @@ function ProtectedLayout() {
             <Toast
               key={toast.id}
               toastId={toast.id}
-              alert={{
-                eventType: toast.eventType,
-                location: toast.location,
+              kind={toast.kind}
+              title={toast.title}
+              body={toast.body}
+              onOpen={() => {
+                if (toast.target === "profile") setDrawerOpen(true);
+                else navigate("/alerts");
               }}
               onDismiss={dismissToast}
             />

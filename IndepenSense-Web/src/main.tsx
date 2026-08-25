@@ -14,6 +14,7 @@ import RequiresAssistedUser from "./routes/RequiresAssistedUser";
 import Signin from "./components/Signin/Signin";
 import Signup from "./components/Signup/Signup";
 import Onboarding from "./pages/Onboarding";
+import InviteAccept from "./pages/InviteAccept";
 import HomeSection from "./components/Home/HomeSection";
 import AlertSection from "./components/Alert/AlertSection";
 import LocationSection from "./components/Location/LocationSection";
@@ -33,6 +34,12 @@ createRoot(document.getElementById("root")!).render(
               <Route path="/signin" element={<Signin />} />
               <Route path="/signup" element={<Signup />} />
             </Route>
+          </Route>
+
+          {/* Outside both guards: an invite link has to open for a signed-out
+              invitee as well as a signed-in one. */}
+          <Route element={<AuthLayout />}>
+            <Route path="/invite/:token" element={<InviteAccept />} />
           </Route>
 
           <Route element={<ProtectedRoute />}>

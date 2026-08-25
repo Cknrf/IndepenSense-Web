@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import LandingPage from "../components/Signup/LandingPage";
 import AssistedUser from "../components/Signup/AssistedUser";
-import LinkAssistedUser from "../components/Signup/LinkAssistedUser";
+import RedeemInvite from "../components/Signup/RedeemInvite";
 
 function Onboarding() {
   const [step, setStep] = useState<"landing" | "create" | "link">("landing");
@@ -19,9 +19,7 @@ function Onboarding() {
       {step === "create" && (
         <AssistedUser onDone={() => navigate("/home")} />
       )}
-      {step === "link" && (
-        <LinkAssistedUser onDone={() => navigate("/home")} />
-      )}
+      {step === "link" && <RedeemInvite onDone={() => navigate("/home")} />}
     </div>
   );
 }

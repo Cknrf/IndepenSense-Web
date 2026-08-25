@@ -1,9 +1,8 @@
 import { API_BASE } from "./api";
 import {
   deleteToken,
-  emitForegroundAlert,
-  emitNotificationTap,
-  parseAlertData,
+  emitPush,
+  parsePushData,
   postToken,
   type EnablePushResult,
 } from "./pushShared";
@@ -19,8 +18,16 @@ import {
 const SERVICE_WORKER_URL = "/sw.js";
 
 /** Messages posted by public/sw.js. Keep the type strings in sync. */
-const SW_ALERT_MESSAGE = "push-alert";
-const SW_TAP_MESSAGE = "push-alert-tap";
+const SW_RECEIVED_MESSAGE = "push-received";
+const SW_TAP_MESSAGE = "push-tapped";
+
+/**
+ * Names used before pushes carried a `type`. A worker cached from a previous
+ * visit keeps posting these until it is replaced, and dropping them would mean
+ * silently losing alert toasts for that one page load.
+ */
+const SW_LEGACY_RECEIVED_MESSAGE = "push-alert";
+const SW_LEGACY_TAP_MESSAGE = "push-alert-tap";
 
 let messageListenerAttached = false;
 
@@ -76,11 +83,20 @@ function attachMessageListener(): void {
     const message = event.data as { type?: string; data?: unknown } | null;
     if (!message?.type) return;
 
-    const data = parseAlertData(message.data);
+    const data = parsePushData(message.data);
     if (!data) return;
 
-    if (message.type === SW_ALERT_MESSAGE) emitForegroundAlert(data);
-    else if (message.type === SW_TAP_MESSAGE) emitNotificationTap(data);
+    if (
+      message.type === SW_RECEIVED_MESSAGE ||
+      message.type === SW_LEGACY_RECEIVED_MESSAGE
+    ) {
+      emitPush(data, "received");
+    } else if (
+      message.type === SW_TAP_MESSAGE ||
+      message.type === SW_LEGACY_TAP_MESSAGE
+    ) {
+      emitPush(data, "tapped");
+    }
   });
 }
 

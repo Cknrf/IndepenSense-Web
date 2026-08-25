@@ -2,9 +2,8 @@ import { Capacitor } from "@capacitor/core";
 import { PushNotifications } from "@capacitor/push-notifications";
 import {
   deleteToken,
-  emitForegroundAlert,
-  emitNotificationTap,
-  parseAlertData,
+  emitPush,
+  parsePushData,
   postToken,
   type EnablePushResult,
 } from "./pushShared";
@@ -16,7 +15,8 @@ import {
  * the app — these are genuinely two transports, dispatched by push.ts.
  */
 
-const CHANNEL_ID = "indepensense-alerts";
+const ALERT_CHANNEL_ID = "indepensense-alerts";
+const SECURITY_CHANNEL_ID = "indepensense-security";
 
 let listenersAttached = false;
 let currentToken: string | null = null;
@@ -56,33 +56,46 @@ async function attachListeners(): Promise<void> {
   await PushNotifications.addListener(
     "pushNotificationReceived",
     (notification) => {
-      const data = parseAlertData(notification.data);
-      if (data) emitForegroundAlert(data);
+      const data = parsePushData(notification.data);
+      if (data) emitPush(data, "received");
     },
   );
 
   await PushNotifications.addListener(
     "pushNotificationActionPerformed",
     (action) => {
-      const data = parseAlertData(action.notification.data);
-      if (data) emitNotificationTap(data);
+      const data = parsePushData(action.notification.data);
+      if (data) emitPush(data, "tapped");
     },
   );
 }
 
 /**
- * Heads-up channel so an alert interrupts rather than sitting silently in the
- * tray. Referenced by name from AndroidManifest.xml for background delivery.
+ * Alerts get a heads-up channel so one interrupts rather than sitting silently
+ * in the tray; it is the manifest default, used for any push that doesn't name
+ * a channel. Guardian-added pushes are a security notice, not an emergency, so
+ * they get a quieter channel of their own — the backend has to select it via
+ * `android_channel_id`, or they arrive at full alert volume.
  */
-async function ensureAlertChannel(): Promise<void> {
+async function ensureChannels(): Promise<void> {
   if (Capacitor.getPlatform() !== "android") return;
+
   await PushNotifications.createChannel({
-    id: CHANNEL_ID,
+    id: ALERT_CHANNEL_ID,
     name: "Alerts",
     description: "Emergency alerts from the person you assist",
     importance: 5,
     visibility: 1,
     vibration: true,
+  });
+
+  await PushNotifications.createChannel({
+    id: SECURITY_CHANNEL_ID,
+    name: "Account activity",
+    description: "Notices when someone else gains access to your assisted user",
+    importance: 4,
+    visibility: 1,
+    vibration: false,
   });
 }
 
@@ -104,7 +117,7 @@ export async function enableNativePush(): Promise<EnablePushResult> {
     if (status.receive !== "granted") return "denied";
 
     registrationWanted = true;
-    await ensureAlertChannel();
+    await ensureChannels();
     await attachListeners();
     await PushNotifications.register();
     return "enabled";

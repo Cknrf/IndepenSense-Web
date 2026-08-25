@@ -8,6 +8,8 @@ import {
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { API_BASE } from "../utils/api";
 import { disablePush } from "../utils/push";
+import { clearGuardianEvents } from "../utils/guardianEvents";
+import { clearPendingInvite } from "../utils/invites";
 
 export type AssistedUserSummary = {
   id: number;
@@ -123,6 +125,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error(error);
     }
+
+    // Both are records of this guardian's account. The next person to sign in
+    // on this device must not inherit them.
+    clearGuardianEvents();
+    clearPendingInvite();
+
     setUser(null);
   };
 

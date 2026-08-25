@@ -1,18 +1,18 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { useAuth } from "../../contexts/AuthContext";
 
 function Signin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { signIn } = useAuth();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      // No navigation here: GuestOnly routes onward once the session exists,
+      // which is also what carries a pending invite through to redemption.
       await signIn(username, password);
-      navigate("/home");
     } catch (error) {
       console.error(error);
       alert("Sign in failed. Please check your credentials.");

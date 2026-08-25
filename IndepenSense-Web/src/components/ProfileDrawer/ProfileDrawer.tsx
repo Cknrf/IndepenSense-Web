@@ -3,20 +3,33 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useNotifications } from "../../contexts/NotificationsContext";
+import type { AssistedUserSummary } from "../../contexts/AuthContext";
+import { relativeTime, type GuardianEvent } from "../../utils/guardianEvents";
+import InviteDialog from "./InviteDialog";
 import "./ProfileDrawer.css";
 
 type ProfileDrawerProps = {
   open: boolean;
   onClose: () => void;
+  guardianEvents: GuardianEvent[];
+  onClearGuardianEvents: () => void;
 };
 
-function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
+function ProfileDrawer({
+  open,
+  onClose,
+  guardianEvents,
+  onClearGuardianEvents,
+}: ProfileDrawerProps) {
   const { user, activeAssistedUser, setActiveAssistedUserID, signOut } =
     useAuth();
   const { theme, toggleTheme } = useTheme();
   const { notifications, toggleNotifications } = useNotifications();
   const navigate = useNavigate();
   const [confirmSignOut, setConfirmSignOut] = useState(false);
+  const [invitingFor, setInvitingFor] = useState<AssistedUserSummary | null>(
+    null,
+  );
 
   const handleAddAssistedUser = () => {
     onClose();
@@ -34,6 +47,9 @@ function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
     if (!open) return;
     const handleKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
+      // InviteDialog handles its own Escape; closing the drawer under it would
+      // take the one-time token off screen with it.
+      if (invitingFor) return;
       if (confirmSignOut) {
         setConfirmSignOut(false);
       } else {
@@ -42,7 +58,7 @@ function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
     };
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
-  }, [open, onClose, confirmSignOut]);
+  }, [open, onClose, confirmSignOut, invitingFor]);
 
   return (
     <>
@@ -128,6 +144,15 @@ function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                     />
                   </svg>
                   <span>ASSISTED USERS</span>
+                  {guardianEvents.length > 0 && (
+                    <button
+                      type="button"
+                      className="profile-drawer-section-action"
+                      onClick={onClearGuardianEvents}
+                    >
+                      Clear activity
+                    </button>
+                  )}
                 </div>
 
                 <div className="profile-drawer-assisted-card">
@@ -139,6 +164,9 @@ function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                     <ul className="profile-drawer-assisted-list">
                       {user.assistedUsers.map((au) => {
                         const isActive = au.id === activeAssistedUser?.id;
+                        const events = guardianEvents.filter(
+                          (event) => event.assistedUserId === au.id,
+                        );
                         return (
                           <li key={au.id}>
                             <button
@@ -161,6 +189,40 @@ function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                                   />
                                 </svg>
                               )}
+                            </button>
+
+                            {events.length > 0 && (
+                              <ul className="profile-drawer-activity-list">
+                                {events.map((event) => (
+                                  <li key={event.id}>
+                                    <span className="profile-drawer-activity-name">
+                                      {event.guardianName} added
+                                    </span>
+                                    <span className="profile-drawer-activity-time">
+                                      {relativeTime(event.receivedAt)}
+                                    </span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+
+                            <button
+                              type="button"
+                              className="profile-drawer-invite-button"
+                              onClick={() => setInvitingFor(au)}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="1em"
+                                height="1em"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  fill="currentColor"
+                                  d="M15 14c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4m-9-4V7H4v3H1v2h3v3h2v-3h3v-2m9 2a4 4 0 0 0 4-4a4 4 0 0 0-4-4a4 4 0 0 0-4 4a4 4 0 0 0 4 4"
+                                />
+                              </svg>
+                              <span>Invite a guardian</span>
                             </button>
                           </li>
                         );
@@ -275,6 +337,13 @@ function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
             </>
           )}
         </div>
+
+        {invitingFor && (
+          <InviteDialog
+            assistedUser={invitingFor}
+            onClose={() => setInvitingFor(null)}
+          />
+        )}
 
         {confirmSignOut && (
           <div

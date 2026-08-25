@@ -18,7 +18,13 @@ import type { EnablePushResult } from "./pushShared";
  * two platforms. See the registration effect in ProtectedLayout.
  */
 
-export type { PushAlertData, EnablePushResult } from "./pushShared";
+export type {
+  PushAlertData,
+  PushGuardianAddedData,
+  PushData,
+  PushDelivery,
+  EnablePushResult,
+} from "./pushShared";
 export { setPushHandlers } from "./pushShared";
 
 export function isNativePush(): boolean {

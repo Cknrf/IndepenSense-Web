@@ -33,19 +33,20 @@ function LandingPage({ onAdd, onLink }: LandingPageProps) {
         </h2>
         <p>
           {hasExisting
-            ? "Create a new assisted user account or link one that's already registered to your Guardian account."
+            ? "Set up a new device, or accept an invite from a guardian who already watches someone."
             : "Guardian features like Home, Alerts, and Contacts are made for monitoring an assisted user. Add one to unlock them."}
         </p>
       </div>
-      <button onClick={onAdd}>Add assisted user</button>
+      <button onClick={onAdd}>Set up a new device</button>
       <button className="secondary" onClick={onLink}>
-        Link assisted user
+        I have an invite code
       </button>
       <div className="tip-container">
         <p>TIP:</p>
         <p>
-          You'll need the assisted user's device / registration ID to link them
-          to your Guardian account.
+          A new device is set up with the pairing code from its manual, once
+          only. To watch someone another guardian already looks after, ask them
+          for an invite instead.
         </p>
       </div>
     </div>

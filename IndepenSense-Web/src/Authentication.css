@@ -348,3 +348,111 @@
   padding: 1rem;
   color: var(--g-muted);
 }
+
+/* Shared form feedback */
+
+.form-hint {
+  margin: 0.35rem 0 0 0;
+  color: var(--g-muted);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.form-error {
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  background-color: rgba(224, 86, 86, 0.12);
+  border: 1px solid #e05656;
+  border-radius: 0.5rem;
+  color: #ff8f8f;
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+/* Invite Component */
+
+.invite-section {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+  color: var(--g-text);
+}
+
+.invite-section .invite-component {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.invite-section .message-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.invite-section .message-container .icon-container {
+  height: 4rem;
+  width: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  color: #5b8def;
+  background-color: var(--g-surface);
+  border-radius: 1.5rem;
+}
+
+.invite-section .message-information p:nth-child(1) {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: bolder;
+}
+
+.invite-section .message-information p:nth-child(2) {
+  margin: 0.5rem 0 0 0;
+  color: var(--g-muted);
+  line-height: 1.45;
+}
+
+.invite-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.invite-section .submit-button {
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: red;
+  border: none;
+  border-radius: 1.5rem;
+  color: white;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.invite-section .submit-button.secondary {
+  background-color: transparent;
+  border: 1px solid var(--g-border);
+  color: var(--g-text);
+}
+
+.invite-expiry-note {
+  text-align: center;
+}
+
+.form-container .submit-button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}

@@ -2,70 +2,59 @@ import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import type { AssistedUserSummary } from "../../contexts/AuthContext";
 import { API_BASE } from "../../utils/api";
+import { withAssistedUser } from "../../utils/invites";
 
 type AssistedUserProps = {
   onDone: () => void;
 };
 
-type AssistedUserInfo = {
-  name: string;
-  uuid: string;
-};
+/**
+ * Deliberately one message for a wrong code, an already-claimed device, and a
+ * revoked one: telling them apart would let someone probe for live devices.
+ */
+const INVALID_PAIRING_CODE_MESSAGE =
+  "That code isn't valid, or this device has already been set up by someone else.";
 
 function AssistedUser({ onDone }: AssistedUserProps) {
   const { setUser } = useAuth();
-  const [assistedUser, setAssistedUser] = useState<AssistedUserInfo>({
-    name: "",
-    uuid: "",
-  });
+  const [name, setName] = useState("");
+  const [pairingCode, setPairingCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleSubmission = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
 
-    setAssistedUser((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  async function createAssistedUser(): Promise<AssistedUserSummary> {
-    const response = await fetch(
-      `${API_BASE}/create-assisted-user-account`,
-      {
+    try {
+      const response = await fetch(`${API_BASE}/create-assisted-user-account`, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name: assistedUser.name,
-          deviceID: assistedUser.uuid,
-        }),
-      },
-    );
+        // Sent as typed: the server normalises case, hyphens and spaces.
+        body: JSON.stringify({ name, pairingCode }),
+      });
 
-    if (!response.ok) {
-      const body = await response.text();
-      throw new Error(`Server responded: ${response.status} ${body}`);
-    }
+      if (response.status === 400) {
+        setError(INVALID_PAIRING_CODE_MESSAGE);
+        return;
+      }
+      if (!response.ok) {
+        const body = await response.text();
+        throw new Error(`Server responded: ${response.status} ${body}`);
+      }
 
-    return (await response.json()) as AssistedUserSummary;
-  }
-
-  const handleSubmission = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    try {
-      const created = await createAssistedUser();
-      setUser((prev) =>
-        prev
-          ? { ...prev, assistedUsers: [...prev.assistedUsers, created] }
-          : prev,
-      );
+      const created = (await response.json()) as AssistedUserSummary;
+      setUser((prev) => withAssistedUser(prev, created));
       onDone();
-    } catch (error) {
-      console.error("Creation of Assisted User Account Failed:", error);
-      alert("Something went wrong while creating account");
+    } catch (submitError) {
+      console.error("Creation of Assisted User Account Failed:", submitError);
+      setError("Something went wrong. Check your connection and try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -87,8 +76,8 @@ function AssistedUser({ onDone }: AssistedUserProps) {
           </svg>
         </div>
         <div className="message-information">
-          <p>Create assisted user</p>
-          <p>Link a person to your Guardian Account</p>
+          <p>Set up a new device</p>
+          <p>Use the pairing code from the device's manual</p>
         </div>
       </div>
       <div className="form-container">
@@ -101,27 +90,38 @@ function AssistedUser({ onDone }: AssistedUserProps) {
               id="name"
               placeholder="Enter assisted user's name"
               required
-              value={assistedUser.name}
-              onChange={handleChange}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
 
           <div>
-            <label htmlFor="unique-id">Unique ID</label>
+            <label htmlFor="pairing-code">Pairing code</label>
             <input
-              type="password"
-              name="uuid"
-              id="unique-id"
-              placeholder="Check UUID in the device"
+              type="text"
+              name="pairingCode"
+              id="pairing-code"
+              placeholder="EYVN-KB5C-SZV4"
               required
-              value={assistedUser.uuid}
-              onChange={handleChange}
+              autoComplete="off"
+              autoCapitalize="characters"
+              spellCheck={false}
+              value={pairingCode}
+              onChange={(e) => setPairingCode(e.target.value)}
             />
+            <p className="form-hint">
+              Printed in the manual that came with the device. Hyphens, spaces
+              and capitals don't matter.
+            </p>
           </div>
+
+          {error && <p className="form-error">{error}</p>}
+
           <input
             className="submit-button"
             type="submit"
-            value="Create account"
+            value={submitting ? "Setting up…" : "Set up device"}
+            disabled={submitting}
           />
         </form>
       </div>

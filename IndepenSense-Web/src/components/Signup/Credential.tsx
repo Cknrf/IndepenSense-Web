@@ -18,31 +18,6 @@ function Credential({ guardian, onSetCredential, onNext }: SetCredential) {
     }));
   };
 
-  async function confirmDevice(uuid: string) {
-    const response = await fetch(
-      `${API_BASE}/device-confirmation`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: uuid,
-        }),
-      },
-    );
-
-    if (!response.ok) {
-      const body = await response.text();
-      throw new Error(
-        `Failed to confirm device. Server responded ${response.status}: ${body}`,
-      );
-    }
-
-    return await response.json();
-  }
-
   async function doesUsernameExist(name: string) {
     const response = await fetch(
       `${API_BASE}/does-username-exist`,
@@ -83,16 +58,10 @@ function Credential({ guardian, onSetCredential, onNext }: SetCredential) {
         return;
       }
 
-      const isConfirmDevice = await confirmDevice(guardian?.uuid);
-      if (!isConfirmDevice) {
-        alert("UUID doesn't match");
-        return;
-      }
-
       onNext("details");
     } catch (error) {
       console.error(error);
-      alert("Something went wrong while confirming the device.");
+      alert("Something went wrong while checking your username.");
     }
   };
 
@@ -115,7 +84,7 @@ function Credential({ guardian, onSetCredential, onNext }: SetCredential) {
         </div>
         <div className="message-information">
           <p>Create Account</p>
-          <p>Register your device to begin</p>
+          <p>Choose how you'll sign in</p>
         </div>
       </div>
       <div className="form-container">
@@ -155,19 +124,6 @@ function Credential({ guardian, onSetCredential, onNext }: SetCredential) {
               placeholder="Confirm password"
               required
               value={guardian?.confirmPassword}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="unique-id">Unique ID</label>
-            <input
-              type="password"
-              name="uuid"
-              id="unique-id"
-              placeholder="Check UUID in the device"
-              required
-              value={guardian?.uuid}
               onChange={handleChange}
             />
           </div>

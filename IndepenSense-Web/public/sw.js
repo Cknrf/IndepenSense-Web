@@ -1,17 +1,23 @@
 /**
- * IndepenSense service worker — alert push delivery only.
+ * IndepenSense service worker — push delivery only.
  *
  * Deliberately implements no fetch/caching. Offline behaviour in the Android
  * shell is handled by Capacitor's errorPath (public/offline.html), and adding
  * a cache here would silently change how the web app serves assets.
  *
  * Expected push payload from the backend:
- *   { title, body, data: { alertId, assistedUserId, eventType, location } }
+ *   { title, body, data: { type, ... } }
+ * where type is either
+ *   "alert"          → alertId, assistedUserId, eventType, location
+ *   "guardian-added" → assistedUserId, assistedUserName, guardianName
+ * A payload with no `type` is treated as an alert, which is what every payload
+ * was before the field existed.
  */
 
-const ALERT_MESSAGE = "push-alert";
-const TAP_MESSAGE = "push-alert-tap";
+const RECEIVED_MESSAGE = "push-received";
+const TAP_MESSAGE = "push-tapped";
 const ALERTS_PATH = "/alerts";
+const HOME_PATH = "/home";
 
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) =>
@@ -19,10 +25,10 @@ self.addEventListener("activate", (event) =>
 );
 
 self.addEventListener("push", (event) => {
-  event.waitUntil(showAlert(event));
+  event.waitUntil(showPush(event));
 });
 
-async function showAlert(event) {
+async function showPush(event) {
   let payload = {};
   try {
     payload = event.data ? event.data.json() : {};
@@ -32,32 +38,64 @@ async function showAlert(event) {
   }
 
   const data = payload.data ?? {};
-  const title = payload.title ?? data.eventType ?? "Alert";
-  const body = payload.body ?? data.location ?? "";
+  const isGuardianAdded = data.type === "guardian-added";
 
   const visibleClient = await findVisibleClient();
 
-  // A visible page renders this as an in-app Toast, so don't buzz the device on
-  // top of that. The notification itself is not optional: subscriptions are
+  // A visible page renders this in-app, so don't buzz the device on top of
+  // that. The notification itself is not optional: subscriptions are
   // userVisibleOnly, and staying silent gets the origin penalised by the browser.
-  if (visibleClient) visibleClient.postMessage({ type: ALERT_MESSAGE, data });
+  if (visibleClient) {
+    visibleClient.postMessage({ type: RECEIVED_MESSAGE, data });
+  }
 
-  await self.registration.showNotification(title, {
-    body,
+  const options = isGuardianAdded
+    ? guardianAddedOptions(payload, data)
+    : alertOptions(payload, data, visibleClient);
+
+  await self.registration.showNotification(options.title, {
+    body: options.body,
     icon: "/favicon.svg",
-    tag: data.alertId ? `alert-${data.alertId}` : "alert",
+    tag: options.tag,
     silent: Boolean(visibleClient),
-    requireInteraction: !visibleClient,
+    requireInteraction: options.requireInteraction,
     data,
   });
 }
 
+function alertOptions(payload, data, visibleClient) {
+  return {
+    title: payload.title ?? data.eventType ?? "Alert",
+    body: payload.body ?? data.location ?? "",
+    tag: data.alertId ? `alert-${data.alertId}` : "alert",
+    // An emergency must not be dismissible by inattention.
+    requireInteraction: !visibleClient,
+  };
+}
+
+function guardianAddedOptions(payload, data) {
+  const fallbackBody =
+    data.guardianName && data.assistedUserName
+      ? `${data.guardianName} can now see ${data.assistedUserName}.`
+      : "Someone new has access to your assisted user.";
+
+  return {
+    title: payload.title ?? "New guardian added",
+    body: payload.body ?? fallbackBody,
+    // Per assisted user and guardian, so repeated deliveries collapse but two
+    // different people being added stay two notifications.
+    tag: `guardian-${data.assistedUserId}-${data.guardianName ?? "unknown"}`,
+    // Important, but not an emergency — let it be swiped away.
+    requireInteraction: false,
+  };
+}
+
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  event.waitUntil(openAlerts(event.notification.data ?? {}));
+  event.waitUntil(openForPush(event.notification.data ?? {}));
 });
 
-async function openAlerts(data) {
+async function openForPush(data) {
   const clientList = await self.clients.matchAll({
     type: "window",
     includeUncontrolled: true,
@@ -71,7 +109,9 @@ async function openAlerts(data) {
     return existing.focus();
   }
 
-  return self.clients.openWindow(ALERTS_PATH);
+  return self.clients.openWindow(
+    data.type === "guardian-added" ? HOME_PATH : ALERTS_PATH,
+  );
 }
 
 async function findVisibleClient() {

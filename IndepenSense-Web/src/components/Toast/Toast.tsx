@@ -1,23 +1,26 @@
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
 import "./Toast.css";
 
-export type ToastAlert = {
-  eventType: string;
-  location: string;
-};
+/**
+ * "alert" is an emergency from the assisted user's device; "info" is an account
+ * notice such as another guardian gaining access. They differ in colour, icon,
+ * and where tapping them leads — the destination is the caller's to decide.
+ */
+export type ToastKind = "alert" | "info";
 
 type ToastProps = {
   toastId: string;
-  alert: ToastAlert;
+  kind: ToastKind;
+  title: string;
+  body: string;
+  onOpen: (id: string) => void;
   onDismiss: (id: string) => void;
 };
 
 const AUTO_DISMISS_MS = 5000;
 const EXIT_ANIMATION_MS = 200;
 
-function Toast({ toastId, alert, onDismiss }: ToastProps) {
-  const navigate = useNavigate();
+function Toast({ toastId, kind, title, body, onOpen, onDismiss }: ToastProps) {
   const [leaving, setLeaving] = useState(false);
 
   const dismissWithExit = useCallback(() => {
@@ -32,28 +35,42 @@ function Toast({ toastId, alert, onDismiss }: ToastProps) {
 
   const handleOpen = () => {
     dismissWithExit();
-    navigate("/alerts");
+    onOpen(toastId);
   };
 
   return (
-    <div className={`toast${leaving ? " leaving" : ""}`} role="alert">
+    <div className={`toast ${kind}${leaving ? " leaving" : ""}`} role="alert">
       <button type="button" className="toast-body" onClick={handleOpen}>
         <div className="toast-icon">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="1em"
-            height="1em"
-            viewBox="0 0 24 24"
-          >
-            <path
-              fill="currentColor"
-              d="M13 14h-2V9h2m0 9h-2v-2h2M1 21h22L12 2z"
-            />
-          </svg>
+          {kind === "alert" ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="1em"
+              height="1em"
+              viewBox="0 0 24 24"
+            >
+              <path
+                fill="currentColor"
+                d="M13 14h-2V9h2m0 9h-2v-2h2M1 21h22L12 2z"
+              />
+            </svg>
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="1em"
+              height="1em"
+              viewBox="0 0 24 24"
+            >
+              <path
+                fill="currentColor"
+                d="M16 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4M8 6a3 3 0 0 1 3 3c0 .79-.31 1.5-.81 2.03A4.99 4.99 0 0 0 8 15a4.99 4.99 0 0 0-2.19-3.97A2.99 2.99 0 0 1 5 9a3 3 0 0 1 3-3m8 8c2.67 0 8 1.34 8 4v2h-8v-2c0-1.4-.61-2.62-1.55-3.5c.53-.32 1.09-.5 1.55-.5M8 13c2.67 0 8 1.34 8 4v2H0v-2c0-2.66 5.33-4 8-4"
+              />
+            </svg>
+          )}
         </div>
         <div className="toast-content">
-          <p className="toast-title">{alert.eventType}</p>
-          <p className="toast-location">{alert.location}</p>
+          <p className="toast-title">{title}</p>
+          <p className="toast-message">{body}</p>
         </div>
       </button>
       <button
