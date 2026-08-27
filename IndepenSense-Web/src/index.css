@@ -8,6 +8,8 @@
   --g-faint: rgba(255, 255, 255, 0.35);
   --g-border: #343131;
   --g-chip: rgba(255, 255, 255, 0.05);
+  --g-success: #4ade80;
+  --g-danger: #ff8f8f;
 
   /* Legacy alias — keep working while we migrate */
   --color-bg: var(--g-bg);
@@ -38,6 +40,9 @@
   --g-faint: #94a3b8;
   --g-border: rgba(15, 20, 32, 0.08);
   --g-chip: rgba(15, 20, 32, 0.05);
+  /* Darkened: the dark-theme pair is unreadable on a light background. */
+  --g-success: #15803d;
+  --g-danger: #b91c1c;
   color-scheme: light dark;
 }
 

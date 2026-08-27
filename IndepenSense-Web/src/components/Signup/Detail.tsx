@@ -1,7 +1,12 @@
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import type { Guardian } from "./Signup";
 import { API_BASE } from "../../utils/api";
 import { useAuth } from "../../contexts/AuthContext";
+import {
+  CONTACT_NUMBER_HELP,
+  normalizePhilippineMobile,
+} from "../../utils/phone";
 import BackButton from "./BackButton";
 
 type SetDetail = {
@@ -10,12 +15,35 @@ type SetDetail = {
   onBack: () => void;
 };
 
+type CreateResult = {
+  ok: boolean;
+  /**
+   * The backend's own message. Both failure modes are a 400 differing only by
+   * this string, so it is the only thing worth showing the user.
+   */
+  message?: string;
+};
+
 function Detail({ guardian, onSetCredential, onBack }: SetDetail) {
   const navigate = useNavigate();
   const { signIn } = useAuth();
 
+  const [contactError, setContactError] = useState<string | null>(null);
+  const [normalizedContact, setNormalizedContact] = useState<string | null>(
+    null,
+  );
+  const [formError, setFormError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    if (name === "contactNumber") {
+      // Clearing rather than re-checking: the number is invalid for most of the
+      // time it is being typed, so keystroke validation would nag.
+      setContactError(null);
+      setNormalizedContact(null);
+    }
 
     onSetCredential((prev) => ({
       ...prev,
@@ -23,42 +51,85 @@ function Detail({ guardian, onSetCredential, onBack }: SetDetail) {
     }));
   };
 
-  async function createGuardian() {
-    const response = await fetch(
-      `${API_BASE}/create-guardian-account`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: guardian.name,
-          role: guardian.role,
-          contactNumber: guardian.contactNumber,
-          email: guardian.email,
-          username: guardian.username,
-          password: guardian.password,
-        }),
-      },
-    );
+  /** Returns the E.164 form, or null having displayed the reason. */
+  const validateContactNumber = (): string | null => {
+    const normalized = normalizePhilippineMobile(guardian.contactNumber);
 
-    if (!response.ok) {
-      const body = await response.text();
-      throw new Error(`Server responded ${response.status}: ${body}`);
+    if (!normalized) {
+      setNormalizedContact(null);
+      setContactError(CONTACT_NUMBER_HELP);
+      return null;
     }
 
-    return await response.json();
+    setContactError(null);
+    setNormalizedContact(normalized);
+    return normalized;
+  };
+
+  const handleContactBlur = () => {
+    // An untouched empty field isn't a mistake yet; `required` catches it on
+    // submit. Complaining at someone who only tabbed past is noise.
+    if (!guardian.contactNumber.trim()) return;
+    validateContactNumber();
+  };
+
+  async function createGuardian(contactNumber: string): Promise<CreateResult> {
+    const response = await fetch(`${API_BASE}/create-guardian-account`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: guardian.name,
+        role: guardian.role,
+        // Normalised, so client and server store the same thing.
+        contactNumber,
+        email: guardian.email,
+        username: guardian.username,
+        password: guardian.password,
+      }),
+    });
+
+    const body = (await response.json().catch(() => null)) as {
+      message?: string;
+    } | null;
+
+    if (!response.ok) {
+      return { ok: false, message: body?.message };
+    }
+    return { ok: true };
   }
 
   const handleSubmission = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setFormError(null);
 
+    const contactNumber = validateContactNumber();
+    if (!contactNumber) return;
+
+    setSubmitting(true);
+
+    let result: CreateResult;
     try {
-      await createGuardian();
+      result = await createGuardian(contactNumber);
     } catch (error) {
       console.error("createGuardian failed:", error);
-      alert("Something went wrong while creating account");
+      setSubmitting(false);
+      setFormError(
+        "Couldn't reach the server. Check your connection and try again.",
+      );
+      return;
+    }
+
+    if (!result.ok) {
+      // The client check is a convenience, not the authority: the backend can
+      // still reject this — a duplicate username only exists server-side — so
+      // show what it said rather than a guess.
+      setSubmitting(false);
+      setFormError(
+        result.message ?? "Something went wrong while creating the account.",
+      );
       return;
     }
 
@@ -134,11 +205,30 @@ function Detail({ guardian, onSetCredential, onBack }: SetDetail) {
               type="tel"
               name="contactNumber"
               id="contactNumber"
-              placeholder="+63"
+              placeholder="09171234567"
               required
+              autoComplete="tel"
+              aria-invalid={Boolean(contactError)}
+              aria-describedby="contact-number-feedback"
               value={guardian?.contactNumber}
               onChange={handleChange}
+              onBlur={handleContactBlur}
             />
+            <p
+              id="contact-number-feedback"
+              className={
+                contactError
+                  ? "form-error"
+                  : normalizedContact
+                    ? "form-confirm"
+                    : "form-hint"
+              }
+            >
+              {contactError ??
+                (normalizedContact
+                  ? `Will be saved as ${normalizedContact}`
+                  : "Philippine mobile number — the device texts emergency alerts here.")}
+            </p>
           </div>
 
           <div>
@@ -153,10 +243,14 @@ function Detail({ guardian, onSetCredential, onBack }: SetDetail) {
               onChange={handleChange}
             />
           </div>
+
+          {formError && <p className="form-error">{formError}</p>}
+
           <input
             className="submit-button"
             type="submit"
-            value="Create account"
+            value={submitting ? "Creating account…" : "Create account"}
+            disabled={submitting}
           />
         </form>
       </div>
