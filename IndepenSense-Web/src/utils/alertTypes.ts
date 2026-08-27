@@ -74,12 +74,18 @@ export type AlertLocation = {
   known: boolean;
 };
 
-export function alertLocation(location: string | null | undefined): AlertLocation {
+/** Whether a geocoded string is a real place name rather than a failure. */
+export function isResolvedLocation(
+  location: string | null | undefined,
+): boolean {
   const trimmed = (location ?? "").trim();
+  return trimmed !== "" && trimmed.toLowerCase() !== LOCATION_UNAVAILABLE;
+}
 
-  if (!trimmed || trimmed.toLowerCase() === LOCATION_UNAVAILABLE) {
+export function alertLocation(location: string | null | undefined): AlertLocation {
+  if (!isResolvedLocation(location)) {
     return { text: "Location unavailable", known: false };
   }
 
-  return { text: trimmed, known: true };
+  return { text: (location ?? "").trim(), known: true };
 }

@@ -328,9 +328,9 @@
   font-size: 1.5rem;
 }
 
-/* Recent / History switch */
+/* Shared controls: the live/history switch and the day strip */
 
-.alert-tabs {
+.view-tabs {
   display: flex;
   padding: 0.25rem;
   background-color: var(--g-surface);
@@ -338,7 +338,7 @@
   border-radius: 1rem;
 }
 
-.alert-tab {
+.view-tab {
   flex: 1;
   padding: 0.65rem 1rem;
   background-color: transparent;
@@ -354,22 +354,40 @@
     color 0.15s ease;
 }
 
-.alert-tab.active {
+.view-tab.active {
   background-color: var(--g-surface-2);
   border-color: var(--g-border);
   color: var(--g-text);
 }
 
-/* Day strip */
+/*
+ * Accent per screen: alerts are red, location blue. Set on the container so the
+ * chips and tabs below inherit one source of truth.
+ */
+.view-tabs.accent-alert,
+.day-strip.accent-alert {
+  --strip-accent: #e05656;
+  --strip-accent-wash: rgba(224, 86, 86, 0.14);
+  --strip-accent-soft: rgba(224, 86, 86, 0.5);
+  --strip-accent-text: #ff8f8f;
+}
 
-.alert-day-strip {
+.view-tabs.accent-location,
+.day-strip.accent-location {
+  --strip-accent: #5b8def;
+  --strip-accent-wash: rgba(91, 141, 239, 0.14);
+  --strip-accent-soft: rgba(91, 141, 239, 0.5);
+  --strip-accent-text: #9dbcf7;
+}
+
+.day-strip {
   display: flex;
   gap: 0.4rem;
   overflow-x: auto;
   padding-bottom: 0.2rem;
 }
 
-.alert-day-chip {
+.day-chip {
   flex: 1;
   min-width: 3.1rem;
   display: flex;
@@ -389,44 +407,44 @@
     color 0.15s ease;
 }
 
-.alert-day-chip-weekday {
+.day-chip-weekday {
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.alert-day-chip-date {
+.day-chip-date {
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--g-text);
 }
 
 /* Today is marked even when another day is selected. */
-.alert-day-chip.today {
-  border-color: rgba(224, 86, 86, 0.5);
+.day-chip.today {
+  border-color: var(--strip-accent-soft);
 }
 
-.alert-day-chip.today .alert-day-chip-date {
-  color: #ff8f8f;
+.day-chip.today .day-chip-date {
+  color: var(--strip-accent-text);
 }
 
-.alert-day-chip.active {
-  background-color: rgba(224, 86, 86, 0.14);
-  border-color: #e05656;
+.day-chip.active {
+  background-color: var(--strip-accent-wash);
+  border-color: var(--strip-accent);
   color: var(--g-text);
 }
 
-/* Reserved whether or not the day has alerts, so chips stay the same height. */
-.alert-day-chip-dot {
+/* Reserved whether or not the day is marked, so chips stay the same height. */
+.day-chip-dot {
   height: 0.3rem;
   width: 0.3rem;
   border-radius: 50%;
   background-color: transparent;
 }
 
-.alert-day-chip-dot.has-alerts {
-  background-color: #e05656;
+.day-chip-dot.marked {
+  background-color: var(--strip-accent);
 }
 
 /* List */
@@ -624,9 +642,12 @@
   gap: 1rem;
 }
 
-.location-section .stack-container:nth-child(1) {
+.location-header {
   width: 100%;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
 }
 
 .location-section .message-container {
@@ -646,64 +667,337 @@
   font-size: 1.5rem;
 }
 
-.location-section .stack-container:nth-child(2) {
+/*
+ * The body must not scroll: the card inside it claims the remaining height so
+ * the map stays as large as possible. Anything long scrolls within its own
+ * overlay instead.
+ */
+.location-body {
   width: 100%;
   flex: 1;
   min-height: 12rem;
   display: flex;
   flex-direction: column;
+  gap: 0.85rem;
 }
 
-.location-section .stack-container:nth-child(2) .stack-child-container {
+/*
+ * One card for both tabs: a flush header, the map filling everything below it,
+ * and overlays floating over the map's lower edge. Positioned, so the overlays
+ * anchor to it.
+ */
+.location-card {
+  position: relative;
   flex: 1;
   min-height: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
-  position: relative;
   background-color: var(--g-surface);
   border: 1px solid var(--g-border);
   border-radius: 1.5rem;
   overflow: hidden;
 }
 
-.location-section
-  .stack-container:nth-child(2)
-  .stack-child-container
-  .map-header {
+.location-card .map-header {
   flex-shrink: 0;
   width: 100%;
+  min-width: 0;
   display: flex;
   align-items: center;
   font-size: 1.25rem;
   color: var(--g-text);
   padding: 1rem;
+  /* A long geocoded place name must not push the card wider. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.location-section .stack-container:nth-child(2) .maps-container {
+/* Takes every pixel the header leaves. */
+.location-section .maps-container {
   flex: 1;
   min-height: 0;
   width: 100%;
   display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
+  color: var(--g-muted);
 }
 
-.location-section .stack-container:nth-child(2) .message-banner-container {
-  height: 5rem;
-  width: 80%;
-  color: var(--g-text);
-  padding: 0.5rem;
+/*
+ * Overlays sit above Leaflet's panes (z-index 400) and its controls, which is
+ * why they carry an explicit z-index rather than relying on DOM order.
+ */
+/*
+ * Sized by its content, not a fixed height — the old `height: 5rem` clipped the
+ * coordinates on a phone. Inset from both edges rather than a percentage width
+ * so it adapts to any screen, and kept clear of Leaflet's attribution strip.
+ */
+.location-card .message-banner-container {
+  position: absolute;
+  bottom: 1.75rem;
+  left: 0.75rem;
+  right: 0.75rem;
+  z-index: 1100;
+  padding: 0.7rem 0.9rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  position: absolute;
-  bottom: 2rem;
-  right: 50%;
-  transform: translateX(50%);
+  gap: 0.3rem;
+  color: var(--g-text);
   background-color: var(--g-surface-2);
   border: 1px solid var(--g-border);
-  border-radius: 1.5rem;
+  border-radius: 1rem;
 }
+
+.message-banner-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+.message-banner-label {
+  flex-shrink: 0;
+  color: var(--g-muted);
+}
+
+/* Allowed to wrap mid-string: a coordinate pair has no spaces to break on. */
+.message-banner-value {
+  min-width: 0;
+  color: var(--g-text);
+  font-weight: 600;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+/* Day header for the history card — same flush treatment as .map-header. */
+.location-day-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.location-day-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--g-text);
+}
+
+.location-day-summary {
+  color: var(--g-muted);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+/* The stops sheet, floating over the bottom of the map. */
+.location-stops-panel {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0.75rem;
+  right: 0.75rem;
+  z-index: 1100;
+  max-height: 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.75rem;
+  background-color: var(--g-surface);
+  border: 1px solid var(--g-border);
+  border-radius: 1.25rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.location-stops-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.location-stop {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 0.85rem;
+  background-color: var(--g-surface-2);
+  border: 1px solid var(--g-border);
+  border-radius: 1rem;
+}
+
+/* Where the person is now — the one row a guardian looks for first. */
+.location-stop.latest {
+  border-color: rgba(224, 86, 86, 0.55);
+  background-color: rgba(224, 86, 86, 0.08);
+}
+
+.location-stop-icon {
+  position: relative;
+  height: 2.75rem;
+  width: 2.75rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: #5b8def;
+  background-color: var(--g-chip);
+  border: 1px solid var(--g-border);
+  border-radius: 0.75rem;
+}
+
+.location-stop.latest .location-stop-icon {
+  color: #e05656;
+  border-color: rgba(224, 86, 86, 0.45);
+}
+
+.location-stop-index {
+  position: absolute;
+  right: -0.3rem;
+  top: -0.3rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--g-surface);
+  border: 1px solid var(--g-border);
+  border-radius: 0.6rem;
+  color: var(--g-muted);
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.location-stop-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.location-stop-name {
+  margin: 0;
+  color: var(--g-text);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* No place name came back from the geocoder — don't present it as one. */
+.location-stop-name.unknown {
+  color: var(--g-faint);
+  font-style: italic;
+  font-weight: 600;
+}
+
+.location-stop-meta {
+  margin: 0;
+  color: var(--g-muted);
+  font-size: 0.8rem;
+}
+
+.location-stop-times {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.location-stop-arrived {
+  margin: 0;
+  color: var(--g-text);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.location-stop-duration {
+  margin: 0;
+  color: var(--g-faint);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.location-stops-toggle {
+  flex-shrink: 0;
+  width: 100%;
+  padding: 0.6rem;
+  background-color: transparent;
+  border: 1px dashed var(--g-border);
+  border-radius: 0.85rem;
+  color: var(--g-muted);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.location-stops-toggle:hover {
+  background-color: var(--g-chip);
+  color: var(--g-text);
+}
+
+/* Empty and error states fill the map area rather than collapsing the card. */
+.location-empty-state {
+  flex: 1;
+  min-height: 0;
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.6rem;
+  color: var(--g-muted);
+}
+
+.location-empty-state h3 {
+  margin: 0;
+  color: var(--g-text);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.location-empty-state p {
+  margin: 0;
+  max-width: 22rem;
+  line-height: 1.45;
+}
+
+.location-fineprint {
+  font-size: 0.8rem;
+  color: var(--g-faint);
+}
+
+.location-retry {
+  margin-top: 0.35rem;
+  padding: 0.6rem 1.25rem;
+  background-color: transparent;
+  border: 1px solid var(--g-border);
+  border-radius: 1.5rem;
+  color: var(--g-text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.location-retry:hover {
+  background-color: var(--g-chip);
+}
+
 
 /* Contacts Section */
 

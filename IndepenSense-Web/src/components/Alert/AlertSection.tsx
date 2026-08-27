@@ -6,23 +6,29 @@ import type { OutletData } from "../../layouts/ProtectedLayout";
 import {
   ALERT_RETENTION_DAYS,
   alertDay,
-  dayOfMonthLabel,
-  enumerateDays,
   fetchAlertHistory,
   formatAlertTime,
   groupByDay,
   mergeLiveAlerts,
+  type HistoryFetch,
+} from "../../utils/alertHistory";
+import {
+  enumerateDays,
   monthDayLabel,
   relativeDayLabel,
   shiftDay,
   weekdayLabel,
-  type HistoryFetch,
-} from "../../utils/alertHistory";
+} from "../../utils/deviceDays";
+import ViewTabs from "../common/ViewTabs";
+import DayStrip from "../common/DayStrip";
 
 type Tab = "recent" | "history";
 
 /** Recent shows the latest few regardless of day; History is the 7-day browse. */
-const RECENT_LABEL = "Recent";
+const TABS = [
+  { value: "recent" as const, label: "Recent" },
+  { value: "history" as const, label: "History" },
+];
 
 function formatRecentTimestamp(occuredAt: string) {
   return new Date(occuredAt).toLocaleString(undefined, {
@@ -268,53 +274,23 @@ function AlertSection() {
           <h2>Alert Logs</h2>
         </div>
 
-        <div className="alert-tabs" role="tablist" aria-label="Alert view">
-          {(["recent", "history"] as Tab[]).map((value) => (
-            <button
-              key={value}
-              type="button"
-              role="tab"
-              aria-selected={tab === value}
-              className={`alert-tab${tab === value ? " active" : ""}`}
-              onClick={() => setTab(value)}
-            >
-              {value === "recent" ? RECENT_LABEL : "History"}
-            </button>
-          ))}
-        </div>
+        <ViewTabs
+          tabs={TABS}
+          active={tab}
+          onChange={setTab}
+          label="Alert view"
+          accent="alert"
+        />
 
         {tab === "history" && days.length > 0 && (
-          <div className="alert-day-strip">
-            {days.map((day) => {
-              const isActive = day === activeDay;
-              const isToday = day === historyData?.to;
-              return (
-                <button
-                  key={day}
-                  type="button"
-                  className={`alert-day-chip${isActive ? " active" : ""}${
-                    isToday ? " today" : ""
-                  }`}
-                  // Tapping the active chip returns to the whole window.
-                  onClick={() => setSelectedDay(isActive ? null : day)}
-                  aria-pressed={isActive}
-                >
-                  <span className="alert-day-chip-weekday">
-                    {weekdayLabel(day)}
-                  </span>
-                  <span className="alert-day-chip-date">
-                    {dayOfMonthLabel(day)}
-                  </span>
-                  <span
-                    className={`alert-day-chip-dot${
-                      daysWithAlerts.has(day) ? " has-alerts" : ""
-                    }`}
-                    aria-hidden="true"
-                  />
-                </button>
-              );
-            })}
-          </div>
+          <DayStrip
+            days={days}
+            selected={activeDay}
+            onSelect={setSelectedDay}
+            today={historyData?.to}
+            markedDays={daysWithAlerts}
+            accent="alert"
+          />
         )}
       </div>
 

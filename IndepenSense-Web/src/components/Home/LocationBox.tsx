@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router";
+import { formatCoordinate } from "../../utils/locationHistory";
+import { alertLocation } from "../../utils/alertTypes";
 
 type Location = {
   latitude: number;
@@ -72,17 +74,17 @@ function LocationBox(location: Location) {
         <div>
           {" "}
           Latitude:
-          <span> {location.latitude}</span>
+          <span> {formatCoordinate(location.latitude)}</span>
         </div>
         <div>
           {" "}
           Longitude:
-          <span> {location.longitude}</span>
+          <span> {formatCoordinate(location.longitude)}</span>
         </div>
         <div>
           {" "}
           Location:
-          <span> {location.location}</span>
+          <span> {alertLocation(location.location).text}</span>
         </div>
       </div>
     </div>
