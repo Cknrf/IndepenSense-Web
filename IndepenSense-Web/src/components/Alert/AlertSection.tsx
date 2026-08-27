@@ -217,8 +217,8 @@ function AlertSection() {
         {group.alerts.map((alert) => (
           <AlertInfoContainer
             key={alert.id}
-            alertType={alert.eventType}
-            message={alert.location}
+            eventType={alert.eventType}
+            location={alert.location}
             timeStamp={formatAlertTime(alert)}
           />
         ))}
@@ -242,8 +242,8 @@ function AlertSection() {
     return alerts.map((alert) => (
       <AlertInfoContainer
         key={alert.id}
-        alertType={alert.eventType}
-        message={alert.location}
+        eventType={alert.eventType}
+        location={alert.location}
         timeStamp={formatRecentTimestamp(alert.occuredAt)}
       />
     ));

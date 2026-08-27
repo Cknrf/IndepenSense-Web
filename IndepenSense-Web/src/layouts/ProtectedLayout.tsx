@@ -4,6 +4,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNotifications } from "../contexts/NotificationsContext";
 import ProfileDrawer from "../components/ProfileDrawer/ProfileDrawer";
 import Toast from "../components/Toast/Toast";
+import type { ToastKind } from "../components/Toast/Toast";
+import { alertLocation, alertTypeMeta } from "../utils/alertTypes";
 import { playAlertSound } from "../utils/sound";
 import { API_BASE } from "../utils/api";
 import {
@@ -46,14 +48,17 @@ export type OutletData = {
 };
 
 /**
- * Size of the live "Recent" list. Applied to the initial fetch as well as to
- * SSE arrivals — capping only the latter made the list silently shrink from
- * "everything the server returned" to this the moment one alert came in.
+ * Size of the live "Recent" list, matching the backend's own `take: 5` on
+ * GET /web/alerts/:id. Raising it here alone would do nothing — the initial
+ * fetch can never return more than five.
  *
- * Not a history limit: the Alerts screen's History tab fetches its own 7-day
- * window, so this can stay short without hiding anything.
+ * Applied to that fetch as well as to SSE arrivals: capping only the latter
+ * made the list shrink the moment one alert came in.
+ *
+ * Not a history limit. The Alerts screen's History tab fetches its own 7-day
+ * window, which is date-bounded with no row cap.
  */
-const RECENT_ALERT_CAP = 10;
+const RECENT_ALERT_CAP = 5;
 
 const TITLES: Record<string, string> = {
   "/home": "Home",
@@ -65,7 +70,7 @@ const TITLES: Record<string, string> = {
 
 type ActiveToast = {
   id: string;
-  kind: "alert" | "info";
+  kind: ToastKind;
   title: string;
   body: string;
   /** Where tapping the toast should take the user. */
@@ -135,14 +140,20 @@ function ProtectedLayout() {
     (alert: { id: number; eventType: string; location: string }) => {
       if (!notificationsEnabledRef.current) return;
       if (!markAlertSeen(alert.id)) return;
+
+      const { label, severity } = alertTypeMeta(alert.eventType);
+
       pushToast({
         id: `alert-${alert.id}`,
-        kind: "alert",
-        title: alert.eventType,
-        body: alert.location,
+        kind: severity === "emergency" ? "alert" : "warning",
+        title: label,
+        body: alertLocation(alert.location).text,
         target: "alerts",
       });
-      playAlertSound();
+
+      // Only emergencies get the sound. A low battery buzzing like a fall is
+      // how guardians learn to ignore the buzz.
+      if (severity === "emergency") playAlertSound();
     },
     [markAlertSeen, pushToast],
   );

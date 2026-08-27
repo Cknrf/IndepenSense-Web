@@ -10,6 +10,7 @@
   --g-chip: rgba(255, 255, 255, 0.05);
   --g-success: #4ade80;
   --g-danger: #ff8f8f;
+  --g-warning: #fbbf24;
 
   /* Legacy alias — keep working while we migrate */
   --color-bg: var(--g-bg);
@@ -43,6 +44,7 @@
   /* Darkened: the dark-theme pair is unreadable on a light background. */
   --g-success: #15803d;
   --g-danger: #b91c1c;
+  --g-warning: #b45309;
   color-scheme: light dark;
 }
 

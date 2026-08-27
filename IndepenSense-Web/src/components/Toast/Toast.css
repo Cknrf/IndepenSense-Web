@@ -30,6 +30,12 @@
   --toast-accent-wash: rgba(224, 86, 86, 0.12);
 }
 
+/* A device notice — real, but not something to jump up for. */
+.toast.warning {
+  --toast-accent: var(--g-warning);
+  --toast-accent-wash: rgba(251, 191, 36, 0.12);
+}
+
 /* An account notice, not an emergency — it must not read as one at a glance. */
 .toast.info {
   --toast-accent: #5b8def;

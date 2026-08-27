@@ -2,11 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import "./Toast.css";
 
 /**
- * "alert" is an emergency from the assisted user's device; "info" is an account
- * notice such as another guardian gaining access. They differ in colour, icon,
- * and where tapping them leads — the destination is the caller's to decide.
+ * "alert" is an emergency from the assisted user's device; "warning" is a
+ * non-urgent device notice (low battery, offline); "info" is an account notice
+ * such as another guardian gaining access. They differ in colour, icon, and
+ * where tapping them leads — the destination is the caller's to decide.
  */
-export type ToastKind = "alert" | "info";
+export type ToastKind = "alert" | "warning" | "info";
 
 type ToastProps = {
   toastId: string;
@@ -42,7 +43,7 @@ function Toast({ toastId, kind, title, body, onOpen, onDismiss }: ToastProps) {
     <div className={`toast ${kind}${leaving ? " leaving" : ""}`} role="alert">
       <button type="button" className="toast-body" onClick={handleOpen}>
         <div className="toast-icon">
-          {kind === "alert" ? (
+          {kind !== "info" ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="1em"

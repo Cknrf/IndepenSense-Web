@@ -2,6 +2,7 @@ import { useNavigate, useOutletContext } from "react-router";
 import BatteryHealth from "./BatteryHealth";
 import LocationBox from "./LocationBox";
 import ConnectivityStatus from "./ConnectivityStatus";
+import { alertLocation, alertTypeLabel } from "../../utils/alertTypes";
 import MapBox from "./MapBox";
 import type { OutletData } from "../../layouts/ProtectedLayout";
 import { useAuth } from "../../contexts/AuthContext";
@@ -118,12 +119,12 @@ function HomeSection() {
                   <div>
                     {" "}
                     Event:
-                    <span> {latestAlert.eventType}</span>
+                    <span> {alertTypeLabel(latestAlert.eventType)}</span>
                   </div>
                   <div>
                     {" "}
                     Location:
-                    <span> {latestAlert.location}</span>
+                    <span> {alertLocation(latestAlert.location).text}</span>
                   </div>
                   <div>
                     {" "}

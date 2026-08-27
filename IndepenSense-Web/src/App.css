@@ -499,12 +499,27 @@
   padding: 1rem;
 }
 
+/*
+ * Severity, not uniform red: a low battery styled like a fall teaches guardians
+ * to discount the emergency colour.
+ */
+.alert-section .alert-info-container.emergency .icon-container {
+  color: #e05656;
+}
+
+.alert-section .alert-info-container.warning .icon-container {
+  color: var(--g-warning);
+}
+
+.alert-section .alert-info-container.warning {
+  border-color: rgba(251, 191, 36, 0.35);
+}
+
 .alert-section .alert-info-container .icon-container {
   height: 3.5rem;
   width: 3.5rem;
   flex-shrink: 0;
   font-size: 2rem;
-  color: red;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -533,6 +548,12 @@
 .alert-section .alert-information .details,
 .alert-section .alert-information .timestamp {
   color: var(--g-text);
+}
+
+/* No place name came back from the geocoder — don't present it as one. */
+.alert-section .alert-information .details.unknown {
+  color: var(--g-faint);
+  font-style: italic;
 }
 
 /* Empty states */
