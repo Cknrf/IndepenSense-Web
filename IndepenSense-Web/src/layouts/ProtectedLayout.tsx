@@ -45,7 +45,15 @@ export type OutletData = {
   alerts: AlertLog[] | null;
 };
 
-const ALERT_HISTORY_CAP = 5;
+/**
+ * Size of the live "Recent" list. Applied to the initial fetch as well as to
+ * SSE arrivals — capping only the latter made the list silently shrink from
+ * "everything the server returned" to this the moment one alert came in.
+ *
+ * Not a history limit: the Alerts screen's History tab fetches its own 7-day
+ * window, so this can stay short without hiding anything.
+ */
+const RECENT_ALERT_CAP = 10;
 
 const TITLES: Record<string, string> = {
   "/home": "Home",
@@ -220,7 +228,7 @@ function ProtectedLayout() {
       if (!response.ok) return;
       const text = await response.text();
       const data = text ? (JSON.parse(text) as AlertLog[]) : [];
-      setAlerts(data);
+      setAlerts(data.slice(0, RECENT_ALERT_CAP));
     }
 
     fetchInitialAlerts();
@@ -234,7 +242,7 @@ function ProtectedLayout() {
       try {
         const alert = JSON.parse(event.data) as AlertLog;
         setAlerts((prev) =>
-          prev ? [alert, ...prev].slice(0, ALERT_HISTORY_CAP) : [alert],
+          prev ? [alert, ...prev].slice(0, RECENT_ALERT_CAP) : [alert],
         );
         showAlertToast(alert);
       } catch (error) {

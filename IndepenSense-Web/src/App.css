@@ -299,9 +299,16 @@
   gap: 1rem;
 }
 
-.alert-section .stack-container:nth-child(1) {
+/*
+ * Class-based rather than :nth-child: the header gained tabs and a day strip,
+ * and positional selectors broke every time the structure changed.
+ */
+.alert-header {
   width: 100%;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
 }
 
 .alert-section .message-container {
@@ -321,7 +328,110 @@
   font-size: 1.5rem;
 }
 
-.alert-section .stack-container:nth-child(2) {
+/* Recent / History switch */
+
+.alert-tabs {
+  display: flex;
+  padding: 0.25rem;
+  background-color: var(--g-surface);
+  border: 1px solid var(--g-border);
+  border-radius: 1rem;
+}
+
+.alert-tab {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 0.8rem;
+  color: var(--g-muted);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.alert-tab.active {
+  background-color: var(--g-surface-2);
+  border-color: var(--g-border);
+  color: var(--g-text);
+}
+
+/* Day strip */
+
+.alert-day-strip {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+}
+
+.alert-day-chip {
+  flex: 1;
+  min-width: 3.1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.5rem 0.35rem 0.4rem;
+  background-color: var(--g-surface);
+  border: 1px solid var(--g-border);
+  border-radius: 0.75rem;
+  color: var(--g-muted);
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.alert-day-chip-weekday {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.alert-day-chip-date {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--g-text);
+}
+
+/* Today is marked even when another day is selected. */
+.alert-day-chip.today {
+  border-color: rgba(224, 86, 86, 0.5);
+}
+
+.alert-day-chip.today .alert-day-chip-date {
+  color: #ff8f8f;
+}
+
+.alert-day-chip.active {
+  background-color: rgba(224, 86, 86, 0.14);
+  border-color: #e05656;
+  color: var(--g-text);
+}
+
+/* Reserved whether or not the day has alerts, so chips stay the same height. */
+.alert-day-chip-dot {
+  height: 0.3rem;
+  width: 0.3rem;
+  border-radius: 50%;
+  background-color: transparent;
+}
+
+.alert-day-chip-dot.has-alerts {
+  background-color: #e05656;
+}
+
+/* List */
+
+.alert-body {
   width: 100%;
   flex: 1;
   min-height: 0;
@@ -329,13 +439,12 @@
   flex-direction: column;
 }
 
-.alert-section .stack-container:nth-child(2) .alert-list-container {
+.alert-section .alert-list-container {
   flex: 1;
   min-height: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 1rem;
   padding: 1rem;
   background-color: var(--g-surface);
@@ -344,10 +453,43 @@
   overflow-y: auto;
 }
 
-.alert-section .stack-container:nth-child(2) .alert-info-container {
+.alert-status {
+  margin: auto;
+  color: var(--g-muted);
+}
+
+.alert-day-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
   flex-shrink: 0;
-  height: 6rem;
-  width: 90%;
+}
+
+.alert-day-group-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0 0.25rem;
+}
+
+.alert-day-group-label {
+  color: var(--g-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.alert-day-group-count {
+  color: var(--g-faint);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.alert-section .alert-info-container {
+  flex-shrink: 0;
+  width: 100%;
   background-color: var(--g-surface-2);
   border: 1px solid var(--g-border);
   border-radius: 1.5rem;
@@ -360,6 +502,7 @@
 .alert-section .alert-info-container .icon-container {
   height: 3.5rem;
   width: 3.5rem;
+  flex-shrink: 0;
   font-size: 2rem;
   color: red;
   display: flex;
@@ -368,9 +511,10 @@
   background-color: transparent;
 }
 
+/* flex + min-width:0 so long locations ellipsis instead of overflowing. */
 .alert-section .alert-info-container .alert-information {
-  height: 100%;
-  width: 10rem;
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
@@ -389,6 +533,68 @@
 .alert-section .alert-information .details,
 .alert-section .alert-information .timestamp {
   color: var(--g-text);
+}
+
+/* Empty states */
+
+.alert-empty-state {
+  margin: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.alert-empty-icon {
+  height: 4rem;
+  width: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  /* Green: the absence of alerts is good news, not an error. */
+  color: var(--g-success);
+  background-color: var(--g-surface-2);
+  border: 1px solid var(--g-border);
+  border-radius: 1.5rem;
+}
+
+.alert-empty-state h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--g-text);
+}
+
+.alert-empty-state p {
+  margin: 0;
+  max-width: 22rem;
+  color: var(--g-muted);
+  line-height: 1.45;
+}
+
+.alert-empty-fineprint {
+  font-size: 0.8rem;
+  color: var(--g-faint);
+}
+
+.alert-empty-action {
+  margin-top: 0.35rem;
+  padding: 0.6rem 1.25rem;
+  background-color: transparent;
+  border: 1px solid var(--g-border);
+  border-radius: 1.5rem;
+  color: var(--g-text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.alert-empty-action:hover {
+  background-color: var(--g-chip);
 }
 
 /* Location Section */
