@@ -17,12 +17,11 @@ import {
   weekdayLabel,
 } from "../../utils/deviceDays";
 import {
-  clusterVisits,
   fetchLocationHistory,
   formatCoordinates,
   formatVisitDuration,
   newestFirst,
-  samplesForDay,
+  visitsForDay,
   type LocationFetch,
   type LocationVisit,
 } from "../../utils/locationHistory";
@@ -133,7 +132,7 @@ function LocationSection() {
       : (historyData?.to ?? selectedDay);
 
   const visits = historyData
-    ? clusterVisits(samplesForDay(historyData.samples, activeDay))
+    ? visitsForDay(historyData.samples, activeDay)
     : [];
 
   const stopsNewestFirst = newestFirst(visits);

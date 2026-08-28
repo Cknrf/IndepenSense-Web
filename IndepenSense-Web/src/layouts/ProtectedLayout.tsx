@@ -48,6 +48,19 @@ export type OutletData = {
 };
 
 /**
+ * How often to re-fetch battery, connectivity and location.
+ *
+ * Matched to the device's own 30s reporting cadence. Polling faster just
+ * re-reads the same row — at the previous 5s, five of every six requests were
+ * byte-identical — and each one costs a server-side reverse-geocode, which is
+ * the main pressure on the geocoder's rate limit.
+ *
+ * Alerts do not come through here: they arrive over SSE, so nothing urgent
+ * depends on this interval.
+ */
+const INTERVAL_INFORMATION_POLL_MS = 30_000;
+
+/**
  * Size of the live "Recent" list, matching the backend's own `take: 5` on
  * GET /web/alerts/:id. Raising it here alone would do nothing — the initial
  * fetch can never return more than five.
@@ -219,7 +232,10 @@ function ProtectedLayout() {
     }
 
     fetchIntervalInformation();
-    const intervalID = setInterval(fetchIntervalInformation, 5000);
+    const intervalID = setInterval(
+      fetchIntervalInformation,
+      INTERVAL_INFORMATION_POLL_MS,
+    );
     return () => clearInterval(intervalID);
   }, [assistedUserID, setUser]);
 

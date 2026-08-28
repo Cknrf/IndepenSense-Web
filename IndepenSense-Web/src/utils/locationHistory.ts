@@ -14,8 +14,10 @@ import { isResolvedLocation } from "./alertTypes";
  * a handful; a day spent at home becomes exactly one.
  *
  * The clustering runs here rather than only on the backend so the feature works
- * against a minimal endpoint. If the backend later collapses samples itself,
- * this pass is harmless: visits that are already distinct stay distinct.
+ * against a minimal endpoint. When the backend has already clustered, this pass
+ * must NOT run its duration floor: a server-side visit carries one timestamp, so
+ * its span looks like zero and every stop but the last would be discarded. See
+ * `visitsForDay`, which decides which case it is looking at.
  */
 
 export const LOCATION_RETENTION_DAYS = 7;
@@ -39,12 +41,31 @@ export const VISIT_RADIUS_METERS = 75;
  */
 export const MIN_VISIT_MINUTES = 5;
 
+/**
+ * Above this many records for one day, the payload must be raw samples: 30s
+ * reporting yields ~2,880 a day, while clustered visits are a handful.
+ *
+ * Used only as a fallback. The backend collapsing samples into visits without
+ * sending `lastSeenAt` or `sampleCount` leaves each visit a single instant with
+ * zero apparent dwell, which the duration floor would then discard — turning a
+ * four-stop day into one. When either field is present this guess is not needed.
+ */
+const PRE_CLUSTERED_MAX_RECORDS = 50;
+
 export type LocationSample = {
   latitude: number;
   longitude: number;
   location: string;
   /** ISO instant the sample was recorded. */
   recordedAt: string;
+  /**
+   * Set only when the backend already clustered and told us when the visit
+   * ended. Without it a server-side visit collapses to a single instant and
+   * its dwell time is unknowable.
+   */
+  lastSeenAt?: string;
+  /** How many raw samples this record stands for, when it is a visit. */
+  sampleCount?: number;
 };
 
 export type LocationVisit = {
@@ -137,6 +158,10 @@ function countName(cluster: Cluster, location: string): void {
   cluster.names.set(name, (cluster.names.get(name) ?? 0) + 1);
 }
 
+function laterOf(a: string, b: string): string {
+  return new Date(b).getTime() > new Date(a).getTime() ? b : a;
+}
+
 function clusterCentre(cluster: Cluster) {
   return {
     latitude: cluster.latitudeSum / cluster.count,
@@ -170,6 +195,12 @@ function isUsableSample(sample: LocationSample): boolean {
 export type ClusterOptions = {
   radiusMeters?: number;
   minVisitMinutes?: number;
+  /**
+   * Drop visits below the duration floor. Turned off for input that is already
+   * clustered, where a zero span means "no end time was reported", not "they
+   * only stayed a moment".
+   */
+  applyDurationFloor?: boolean;
 };
 
 /**
@@ -190,6 +221,7 @@ export function clusterVisits(
 ): LocationVisit[] {
   const radius = options.radiusMeters ?? VISIT_RADIUS_METERS;
   const minDurationMs = (options.minVisitMinutes ?? MIN_VISIT_MINUTES) * 60_000;
+  const applyFloor = options.applyDurationFloor ?? true;
 
   const ordered = samples
     .filter(isUsableSample)
@@ -209,20 +241,25 @@ export function clusterVisits(
       current &&
       distanceMeters(clusterCentre(current), sample) <= radius
     ) {
-      current.latitudeSum += sample.latitude;
-      current.longitudeSum += sample.longitude;
-      current.count += 1;
-      current.lastSeenAt = sample.recordedAt;
+      const weight = sample.sampleCount ?? 1;
+      current.latitudeSum += sample.latitude * weight;
+      current.longitudeSum += sample.longitude * weight;
+      current.count += weight;
+      current.lastSeenAt = laterOf(
+        current.lastSeenAt,
+        sample.lastSeenAt ?? sample.recordedAt,
+      );
       countName(current, sample.location);
       continue;
     }
 
+    const weight = sample.sampleCount ?? 1;
     const started: Cluster = {
-      latitudeSum: sample.latitude,
-      longitudeSum: sample.longitude,
-      count: 1,
+      latitudeSum: sample.latitude * weight,
+      longitudeSum: sample.longitude * weight,
+      count: weight,
       arrivedAt: sample.recordedAt,
-      lastSeenAt: sample.recordedAt,
+      lastSeenAt: sample.lastSeenAt ?? sample.recordedAt,
       names: new Map(),
     };
     countName(started, sample.location);
@@ -252,6 +289,8 @@ export function clusterVisits(
   const visits = merged.map(toVisit);
 
   // Step 3: drop pass-throughs.
+  if (!applyFloor) return visits;
+
   const lastVisit = visits[visits.length - 1];
   const kept = visits.filter(
     (visit) =>
@@ -272,6 +311,39 @@ export function newestFirst(visits: LocationVisit[]): LocationVisit[] {
     (a, b) =>
       new Date(b.arrivedAt).getTime() - new Date(a.arrivedAt).getTime(),
   );
+}
+
+/** True when these records are visits the backend already collapsed. */
+export function looksPreClustered(records: LocationSample[]): boolean {
+  // An explicit end time or sample count is proof, and is the intended signal.
+  if (
+    records.some(
+      (record) => record.lastSeenAt !== undefined || record.sampleCount !== undefined,
+    )
+  ) {
+    return true;
+  }
+
+  // Otherwise fall back on density: 30s reporting cannot produce a day this
+  // sparse, so these must be visits.
+  return records.length > 0 && records.length <= PRE_CLUSTERED_MAX_RECORDS;
+}
+
+/**
+ * The visits to draw for one day, whichever shape the backend sent.
+ *
+ * Clustering pre-clustered records is safe as long as the duration floor is
+ * skipped: consecutive visits are far apart, so each stays its own cluster, and
+ * the pass then just normalises them into `LocationVisit`.
+ */
+export function visitsForDay(
+  samples: LocationSample[],
+  day: string,
+): LocationVisit[] {
+  const forDay = samplesForDay(samples, day);
+  return clusterVisits(forDay, {
+    applyDurationFloor: !looksPreClustered(forDay),
+  });
 }
 
 export function samplesForDay(
@@ -328,11 +400,18 @@ function normalizeSample(raw: unknown): LocationSample | null {
   const longitude = Number(record.longitude);
   if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
 
+  const lastSeenAt = record.lastSeenAt ?? record.departedAt ?? record.endedAt;
+  const sampleCount = Number(record.sampleCount);
+
   return {
     latitude,
     longitude,
     location: typeof record.location === "string" ? record.location : "",
     recordedAt,
+    ...(typeof lastSeenAt === "string" ? { lastSeenAt } : {}),
+    ...(Number.isFinite(sampleCount) && sampleCount > 0
+      ? { sampleCount }
+      : {}),
   };
 }
 
