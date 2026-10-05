@@ -1,9 +1,15 @@
-import { alertLocation, alertTypeMeta, type AlertIcon } from "../../utils/alertTypes";
+import {
+  alertLocation,
+  alertTypeMeta,
+  type AlertIcon,
+} from "../../utils/alertTypes";
 
 type AlertInfo = {
   /** Raw DB enum value; the label and styling are derived from it. */
   eventType: string;
   location: string;
+  latitude: number;
+  longitude: number;
   timeStamp: string;
 };
 
@@ -30,9 +36,15 @@ function AlertTypeIcon({ icon }: { icon: AlertIcon }) {
   );
 }
 
-function AlertInfoContainer({ eventType, location, timeStamp }: AlertInfo) {
+function AlertInfoContainer({
+  eventType,
+  location,
+  latitude,
+  longitude,
+  timeStamp,
+}: AlertInfo) {
   const { label, severity, icon } = alertTypeMeta(eventType);
-  const place = alertLocation(location);
+  const place = alertLocation(location, latitude, longitude);
 
   return (
     <div className={`alert-info-container ${severity}`}>

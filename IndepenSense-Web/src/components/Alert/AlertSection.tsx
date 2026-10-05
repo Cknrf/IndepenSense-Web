@@ -153,7 +153,8 @@ function AlertSection() {
   const groups = groupByDay(visibleAlerts);
 
   const renderHistoryBody = () => {
-    if (isLoadingHistory) return <p className="alert-status">Loading history…</p>;
+    if (isLoadingHistory)
+      return <p className="alert-status">Loading history…</p>;
 
     if (loaded?.status === "unavailable") {
       return (
@@ -225,6 +226,8 @@ function AlertSection() {
             key={alert.id}
             eventType={alert.eventType}
             location={alert.location}
+            latitude={alert.latitude}
+            longitude={alert.longitude}
             timeStamp={formatAlertTime(alert)}
           />
         ))}
@@ -250,6 +253,8 @@ function AlertSection() {
         key={alert.id}
         eventType={alert.eventType}
         location={alert.location}
+        latitude={alert.latitude}
+        longitude={alert.longitude}
         timeStamp={formatRecentTimestamp(alert.occuredAt)}
       />
     ));

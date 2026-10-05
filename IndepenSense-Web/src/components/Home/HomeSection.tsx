@@ -6,6 +6,7 @@ import { alertLocation, alertTypeLabel } from "../../utils/alertTypes";
 import MapBox from "./MapBox";
 import type { OutletData } from "../../layouts/ProtectedLayout";
 import { useAuth } from "../../contexts/AuthContext";
+import { formatLastSeen } from "../../utils/deviceLiveness";
 
 function formatOccuredAt(occuredAt: string) {
   return new Date(occuredAt).toLocaleString(undefined, {
@@ -17,12 +18,20 @@ function formatOccuredAt(occuredAt: string) {
 }
 
 function HomeSection() {
-  const { intervalInformation, alerts } = useOutletContext<OutletData>();
+  const { intervalInformation, alerts, deviceLive, now } =
+    useOutletContext<OutletData>();
   const { user, activeAssistedUser } = useAuth();
   const navigate = useNavigate();
   if (!intervalInformation) return <span>Unable To Retrieve Information</span>;
-  const { batteryHealth, internetStatus, latitude, longitude, location } =
-    intervalInformation;
+  const {
+    batteryHealth,
+    internetStatus,
+    latitude,
+    longitude,
+    location,
+    createdAt,
+  } = intervalInformation;
+  const lastSeen = formatLastSeen(createdAt, now);
   const guardianName = user?.name ?? "";
   const assistedName = activeAssistedUser?.name ?? "";
   const latestAlert = alerts?.[0];
@@ -47,7 +56,10 @@ function HomeSection() {
       <div className="stack-container">
         <BatteryHealth percentage={batteryHealth}></BatteryHealth>
 
-        <ConnectivityStatus isConnected={internetStatus}></ConnectivityStatus>
+        <ConnectivityStatus
+          isConnected={deviceLive && internetStatus}
+          lastSeen={deviceLive ? null : lastSeen}
+        ></ConnectivityStatus>
 
         <div className="stack-child-container">
           <div
@@ -124,7 +136,16 @@ function HomeSection() {
                   <div>
                     {" "}
                     Location:
-                    <span> {alertLocation(latestAlert.location).text}</span>
+                    <span>
+                      {" "}
+                      {
+                        alertLocation(
+                          latestAlert.location,
+                          latestAlert.latitude,
+                          latestAlert.longitude,
+                        ).text
+                      }
+                    </span>
                   </div>
                   <div>
                     {" "}
@@ -144,6 +165,8 @@ function HomeSection() {
             latitude={latitude}
             longitude={longitude}
             location={location}
+            live={deviceLive}
+            lastSeen={lastSeen}
           ></LocationBox>
         </div>
       </div>

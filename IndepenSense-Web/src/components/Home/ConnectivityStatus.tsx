@@ -1,8 +1,10 @@
 type IsConnected = {
   isConnected: boolean;
+  /** Set when the device has stopped reporting, e.g. "12 min ago". */
+  lastSeen?: string | null;
 };
 
-function ConnectivityStatus({ isConnected }: IsConnected) {
+function ConnectivityStatus({ isConnected, lastSeen }: IsConnected) {
   return (
     <div className="connectivity-container long-box">
       <div>
@@ -20,7 +22,9 @@ function ConnectivityStatus({ isConnected }: IsConnected) {
         </svg>
       </div>
 
-      <div>Is connected:</div>
+      <div>
+        {lastSeen ? `Offline · last seen ${lastSeen}` : "Is connected:"}
+      </div>
       <div>{isConnected ? "Yes" : "No"}</div>
     </div>
   );

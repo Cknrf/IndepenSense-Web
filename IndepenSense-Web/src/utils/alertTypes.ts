@@ -82,10 +82,49 @@ export function isResolvedLocation(
   return trimmed !== "" && trimmed.toLowerCase() !== LOCATION_UNAVAILABLE;
 }
 
-export function alertLocation(location: string | null | undefined): AlertLocation {
-  if (!isResolvedLocation(location)) {
-    return { text: "Location unavailable", known: false };
+/**
+ * Whether a coordinate pair is a real GPS fix. The device sends 0,0 when it has
+ * none, which is a point in the ocean rather than a place.
+ */
+export function hasFix(
+  latitude: number | null | undefined,
+  longitude: number | null | undefined,
+): latitude is number {
+  return (
+    typeof latitude === "number" &&
+    typeof longitude === "number" &&
+    Number.isFinite(latitude) &&
+    Number.isFinite(longitude) &&
+    !(latitude === 0 && longitude === 0)
+  );
+}
+
+/**
+ * The place to show for a record. Falls back to its coordinates when the
+ * geocoder had no name: the coordinates are where the person actually was, and
+ * in an emergency that is far more useful than "Location unavailable".
+ */
+export function alertLocation(
+  location: string | null | undefined,
+  latitude?: number | null,
+  longitude?: number | null,
+): AlertLocation {
+  if (isResolvedLocation(location)) {
+    return { text: (location ?? "").trim(), known: true };
   }
 
-  return { text: (location ?? "").trim(), known: true };
+  if (hasFix(latitude, longitude)) {
+    return {
+      text: `${latitude.toFixed(COORDINATE_DECIMALS)}, ${(longitude as number).toFixed(COORDINATE_DECIMALS)}`,
+      known: true,
+    };
+  }
+
+  return { text: "Location unavailable", known: false };
 }
+
+/**
+ * Matches formatCoordinate in locationHistory.ts, which imports this module and
+ * so can't be imported back here.
+ */
+const COORDINATE_DECIMALS = 5;
