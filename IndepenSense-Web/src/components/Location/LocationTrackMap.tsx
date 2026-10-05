@@ -108,7 +108,14 @@ function LocationTrackMap({ visits }: LocationTrackMapProps) {
             >
               <Tooltip direction="top" offset={[0, -8]}>
                 <strong>
-                  {index + 1}. {alertLocation(visit.location).text}
+                  {index + 1}.{" "}
+                  {
+                    alertLocation(
+                      visit.location,
+                      visit.latitude,
+                      visit.longitude,
+                    ).text
+                  }
                 </strong>
                 <br />
                 {formatDeviceTime(visit.arrivedAt)}

@@ -87,7 +87,16 @@ function LocationBox(location: Location) {
         <div>
           {" "}
           Location:
-          <span> {alertLocation(location.location).text}</span>
+          <span>
+            {" "}
+            {
+              alertLocation(
+                location.location,
+                location.latitude,
+                location.longitude,
+              ).text
+            }
+          </span>
         </div>
         {!location.live && (
           <div>

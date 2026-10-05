@@ -58,7 +58,7 @@ type StopRowProps = {
 };
 
 function StopRow({ visit, index, isLatest }: StopRowProps) {
-  const place = alertLocation(visit.location);
+  const place = alertLocation(visit.location, visit.latitude, visit.longitude);
 
   return (
     <li className={`location-stop${isLatest ? " latest" : ""}`}>
@@ -152,7 +152,7 @@ function LocationSection() {
     }
 
     const { latitude, longitude, location, createdAt } = intervalInformation;
-    const place = alertLocation(location);
+    const place = alertLocation(location, latitude, longitude);
 
     return (
       <div className="location-card">
