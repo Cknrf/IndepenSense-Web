@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import { formatCoordinate } from "../../utils/locationHistory";
-import { alertLocation } from "../../utils/alertTypes";
+import { isResolvedLocation } from "../../utils/alertTypes";
 
 type Location = {
   latitude: number;
@@ -84,20 +84,15 @@ function LocationBox(location: Location) {
           Longitude:
           <span> {formatCoordinate(location.longitude)}</span>
         </div>
-        <div>
-          {" "}
-          Location:
-          <span>
+        {/* Only a real place name: the rows above already give the
+            coordinates, and repeating them here added nothing. */}
+        {isResolvedLocation(location.location) && (
+          <div>
             {" "}
-            {
-              alertLocation(
-                location.location,
-                location.latitude,
-                location.longitude,
-              ).text
-            }
-          </span>
-        </div>
+            Location:
+            <span> {location.location.trim()}</span>
+          </div>
+        )}
         {!location.live && (
           <div>
             {" "}

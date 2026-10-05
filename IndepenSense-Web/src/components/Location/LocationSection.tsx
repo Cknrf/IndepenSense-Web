@@ -6,7 +6,7 @@ import ViewTabs from "../common/ViewTabs";
 import DayStrip from "../common/DayStrip";
 import { useAuth } from "../../contexts/AuthContext";
 import type { OutletData } from "../../layouts/ProtectedLayout";
-import { alertLocation } from "../../utils/alertTypes";
+import { alertLocation, isResolvedLocation } from "../../utils/alertTypes";
 import { formatLastSeen } from "../../utils/deviceLiveness";
 import {
   deviceToday,
@@ -173,12 +173,16 @@ function LocationSection() {
               {formatLastSeen(createdAt, now)}
             </span>
           </div>
-          <div className="message-banner-row">
-            <span className="message-banner-label">Coordinates</span>
-            <span className="message-banner-value">
-              {formatCoordinates(latitude, longitude)}
-            </span>
-          </div>
+          {/* Without a place name the header already shows the
+              coordinates; a second row would only repeat them. */}
+          {isResolvedLocation(location) && (
+            <div className="message-banner-row">
+              <span className="message-banner-label">Coordinates</span>
+              <span className="message-banner-value">
+                {formatCoordinates(latitude, longitude)}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     );
