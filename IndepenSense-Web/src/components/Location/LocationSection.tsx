@@ -7,6 +7,7 @@ import DayStrip from "../common/DayStrip";
 import { useAuth } from "../../contexts/AuthContext";
 import type { OutletData } from "../../layouts/ProtectedLayout";
 import { alertLocation } from "../../utils/alertTypes";
+import { formatLastSeen } from "../../utils/deviceLiveness";
 import {
   deviceToday,
   enumerateDays,
@@ -84,7 +85,8 @@ function StopRow({ visit, index, isLatest }: StopRowProps) {
 }
 
 function LocationSection() {
-  const { intervalInformation } = useOutletContext<OutletData>();
+  const { intervalInformation, deviceLive, now } =
+    useOutletContext<OutletData>();
   const { activeAssistedUser } = useAuth();
   const assistedUserID = activeAssistedUser?.id;
   const assistedUserName = activeAssistedUser?.name ?? "this person";
@@ -149,17 +151,27 @@ function LocationSection() {
       );
     }
 
-    const { latitude, longitude, location } = intervalInformation;
+    const { latitude, longitude, location, createdAt } = intervalInformation;
     const place = alertLocation(location);
 
     return (
       <div className="location-card">
-        <div className="map-header">{place.text}</div>
-        <MapBox latitude={latitude} longitude={longitude} location={place.text} />
+        <div className="map-header">
+          {deviceLive ? place.text : `Last known: ${place.text}`}
+        </div>
+        <MapBox
+          latitude={latitude}
+          longitude={longitude}
+          location={place.text}
+        />
         <div className="message-banner-container">
           <div className="message-banner-row">
-            <span className="message-banner-label">Last updated</span>
-            <span className="message-banner-value">Just now</span>
+            <span className="message-banner-label">
+              {deviceLive ? "Last updated" : "Device offline · last seen"}
+            </span>
+            <span className="message-banner-value">
+              {formatLastSeen(createdAt, now)}
+            </span>
           </div>
           <div className="message-banner-row">
             <span className="message-banner-label">Coordinates</span>
@@ -189,8 +201,8 @@ function LocationSection() {
           <div className="location-empty-state">
             <h3>History isn&apos;t available yet</h3>
             <p>
-              Location history for {assistedUserName} can&apos;t be loaded
-              right now. The Current tab is unaffected.
+              Location history for {assistedUserName} can&apos;t be loaded right
+              now. The Current tab is unaffected.
             </p>
             <button
               type="button"
@@ -264,13 +276,11 @@ function LocationSection() {
                 No location recorded on {weekdayLabel(activeDay)},{" "}
                 {monthDayLabel(activeDay)}
               </h3>
-              <p>
-                The device may have been off or without a signal all day.
-              </p>
+              <p>The device may have been off or without a signal all day.</p>
               <p className="location-fineprint">
                 Location is shown for {historyData.retentionDays} days.{" "}
-                {monthDayLabel(shiftDay(historyData.from, -1))} and earlier is no
-                longer available.
+                {monthDayLabel(shiftDay(historyData.from, -1))} and earlier is
+                no longer available.
               </p>
             </div>
           ) : (
@@ -279,16 +289,17 @@ function LocationSection() {
 
               <div className="location-stops-panel">
                 <ul className="location-stops-list">
-                  {(expanded ? stopsNewestFirst : stopsNewestFirst.slice(0, 1)).map(
-                    (visit) => (
-                      <StopRow
-                        key={visit.id}
-                        visit={visit}
-                        index={visits.indexOf(visit) + 1}
-                        isLatest={visit === latestVisit}
-                      />
-                    ),
-                  )}
+                  {(expanded
+                    ? stopsNewestFirst
+                    : stopsNewestFirst.slice(0, 1)
+                  ).map((visit) => (
+                    <StopRow
+                      key={visit.id}
+                      visit={visit}
+                      index={visits.indexOf(visit) + 1}
+                      isLatest={visit === latestVisit}
+                    />
+                  ))}
                 </ul>
 
                 {visits.length > 1 && (

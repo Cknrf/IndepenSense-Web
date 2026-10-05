@@ -14,6 +14,7 @@ import {
 } from "../../utils/alertHistory";
 import {
   enumerateDays,
+  formatDeviceDateTime,
   monthDayLabel,
   relativeDayLabel,
   shiftDay,
@@ -29,15 +30,6 @@ const TABS = [
   { value: "recent" as const, label: "Recent" },
   { value: "history" as const, label: "History" },
 ];
-
-function formatRecentTimestamp(occuredAt: string) {
-  return new Date(occuredAt).toLocaleString(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
 
 function ShieldIcon() {
   return (
@@ -153,7 +145,8 @@ function AlertSection() {
   const groups = groupByDay(visibleAlerts);
 
   const renderHistoryBody = () => {
-    if (isLoadingHistory) return <p className="alert-status">Loading history…</p>;
+    if (isLoadingHistory)
+      return <p className="alert-status">Loading history…</p>;
 
     if (loaded?.status === "unavailable") {
       return (
@@ -225,6 +218,8 @@ function AlertSection() {
             key={alert.id}
             eventType={alert.eventType}
             location={alert.location}
+            latitude={alert.latitude}
+            longitude={alert.longitude}
             timeStamp={formatAlertTime(alert)}
           />
         ))}
@@ -250,7 +245,9 @@ function AlertSection() {
         key={alert.id}
         eventType={alert.eventType}
         location={alert.location}
-        timeStamp={formatRecentTimestamp(alert.occuredAt)}
+        latitude={alert.latitude}
+        longitude={alert.longitude}
+        timeStamp={formatDeviceDateTime(alert.occuredAt)}
       />
     ));
   };

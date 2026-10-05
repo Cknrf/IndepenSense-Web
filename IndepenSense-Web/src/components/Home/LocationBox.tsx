@@ -6,6 +6,9 @@ type Location = {
   latitude: number;
   longitude: number;
   location: string;
+  /** False when the device stopped reporting: this is then its last position. */
+  live: boolean;
+  lastSeen: string;
 };
 
 function LocationBox(location: Location) {
@@ -29,7 +32,7 @@ function LocationBox(location: Location) {
           />
         </svg>
 
-        <span>Location</span>
+        <span>{location.live ? "Location" : "Last known location"}</span>
 
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -86,6 +89,13 @@ function LocationBox(location: Location) {
           Location:
           <span> {alertLocation(location.location).text}</span>
         </div>
+        {!location.live && (
+          <div>
+            {" "}
+            Last seen:
+            <span> {location.lastSeen}</span>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import type { ToastKind } from "../components/Toast/Toast";
 import { alertLocation, alertTypeMeta } from "../utils/alertTypes";
 import { playAlertSound } from "../utils/sound";
 import { API_BASE } from "../utils/api";
+import { isDeviceLive } from "../utils/deviceLiveness";
 import {
   disablePush,
   enablePush,
@@ -31,6 +32,8 @@ export type IntervalInformation = {
   latitude: number;
   longitude: number;
   location: string;
+  /** When the server received this report — the device's last sign of life. */
+  createdAt: string;
 };
 
 export type AlertLog = {
@@ -45,6 +48,13 @@ export type AlertLog = {
 export type OutletData = {
   intervalInformation: IntervalInformation | null;
   alerts: AlertLog[] | null;
+  /**
+   * False once the device has stopped reporting. `intervalInformation` is then
+   * its last known state, not its current one, and must be shown as such.
+   */
+  deviceLive: boolean;
+  /** Ticks with the poll, so "last seen" text and liveness age between fetches. */
+  now: number;
 };
 
 /**
@@ -106,6 +116,7 @@ function ProtectedLayout() {
   const [intervalInformation, setIntervalInformation] =
     useState<IntervalInformation | null>(null);
   const [alerts, setAlerts] = useState<AlertLog[] | null>(null);
+  const [now, setNow] = useState(() => Date.now());
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [toasts, setToasts] = useState<ActiveToast[]>([]);
   const [guardianEvents, setGuardianEvents] =
@@ -150,7 +161,13 @@ function ProtectedLayout() {
   }, []);
 
   const showAlertToast = useCallback(
-    (alert: { id: number; eventType: string; location: string }) => {
+    (alert: {
+      id: number;
+      eventType: string;
+      location: string;
+      latitude?: number;
+      longitude?: number;
+    }) => {
       if (!notificationsEnabledRef.current) return;
       if (!markAlertSeen(alert.id)) return;
 
@@ -160,7 +177,8 @@ function ProtectedLayout() {
         id: `alert-${alert.id}`,
         kind: severity === "emergency" ? "alert" : "warning",
         title: label,
-        body: alertLocation(alert.location).text,
+        body: alertLocation(alert.location, alert.latitude, alert.longitude)
+          .text,
         target: "alerts",
       });
 
@@ -231,11 +249,15 @@ function ProtectedLayout() {
       setIntervalInformation(data);
     }
 
-    fetchIntervalInformation();
-    const intervalID = setInterval(
-      fetchIntervalInformation,
-      INTERVAL_INFORMATION_POLL_MS,
-    );
+    // The clock advances even when a fetch fails: a backend outage must not
+    // freeze the dashboard on "live".
+    const tick = () => {
+      setNow(Date.now());
+      void fetchIntervalInformation();
+    };
+
+    tick();
+    const intervalID = setInterval(tick, INTERVAL_INFORMATION_POLL_MS);
     return () => clearInterval(intervalID);
   }, [assistedUserID, setUser]);
 
@@ -244,10 +266,9 @@ function ProtectedLayout() {
     if (!assistedUserID) return;
 
     async function fetchInitialAlerts() {
-      const response = await fetch(
-        `${API_BASE}/alerts/${assistedUserID}`,
-        { credentials: "include" },
-      );
+      const response = await fetch(`${API_BASE}/alerts/${assistedUserID}`, {
+        credentials: "include",
+      });
       if (response.status === 401) {
         setUser(null);
         return;
@@ -375,7 +396,14 @@ function ProtectedLayout() {
 
       <div className="main-interface">
         <Outlet
-          context={{ intervalInformation, alerts } satisfies OutletData}
+          context={
+            {
+              intervalInformation,
+              alerts,
+              deviceLive: isDeviceLive(intervalInformation?.createdAt, now),
+              now,
+            } satisfies OutletData
+          }
         />
       </div>
 
