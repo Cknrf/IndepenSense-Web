@@ -29,6 +29,14 @@ const localTimeFormatter = new Intl.DateTimeFormat("en-US", {
   minute: "2-digit",
 });
 
+const localDateTimeFormatter = new Intl.DateTimeFormat("en-US", {
+  timeZone: DEVICE_TIME_ZONE,
+  month: "short",
+  day: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+});
+
 /*
  * Plain `YYYY-MM-DD` strings are parsed as UTC midnight and formatted back in
  * UTC, so a calendar date never drifts a day through a timezone offset.
@@ -61,6 +69,11 @@ export function deviceToday(): string {
 /** Clock time of an instant, in the device's timezone. */
 export function formatDeviceTime(iso: string): string {
   return localTimeFormatter.format(new Date(iso));
+}
+
+/** "Oct 5, 10:46 AM" for an instant, in the device's timezone. */
+export function formatDeviceDateTime(iso: string): string {
+  return localDateTimeFormatter.format(new Date(iso));
 }
 
 function parsePlainDate(ymd: string): Date {

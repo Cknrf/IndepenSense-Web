@@ -14,6 +14,7 @@ import {
 } from "../../utils/alertHistory";
 import {
   enumerateDays,
+  formatDeviceDateTime,
   monthDayLabel,
   relativeDayLabel,
   shiftDay,
@@ -29,15 +30,6 @@ const TABS = [
   { value: "recent" as const, label: "Recent" },
   { value: "history" as const, label: "History" },
 ];
-
-function formatRecentTimestamp(occuredAt: string) {
-  return new Date(occuredAt).toLocaleString(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
 
 function ShieldIcon() {
   return (
@@ -255,7 +247,7 @@ function AlertSection() {
         location={alert.location}
         latitude={alert.latitude}
         longitude={alert.longitude}
-        timeStamp={formatRecentTimestamp(alert.occuredAt)}
+        timeStamp={formatDeviceDateTime(alert.occuredAt)}
       />
     ));
   };

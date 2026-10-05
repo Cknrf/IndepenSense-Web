@@ -7,15 +7,7 @@ import MapBox from "./MapBox";
 import type { OutletData } from "../../layouts/ProtectedLayout";
 import { useAuth } from "../../contexts/AuthContext";
 import { formatLastSeen } from "../../utils/deviceLiveness";
-
-function formatOccuredAt(occuredAt: string) {
-  return new Date(occuredAt).toLocaleString(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
+import { formatDeviceDateTime } from "../../utils/deviceDays";
 
 function HomeSection() {
   const { intervalInformation, alerts, deviceLive, now } =
@@ -150,7 +142,7 @@ function HomeSection() {
                   <div>
                     {" "}
                     Timestamp:
-                    <span> {formatOccuredAt(latestAlert.occuredAt)}</span>
+                    <span> {formatDeviceDateTime(latestAlert.occuredAt)}</span>
                   </div>
                 </>
               ) : (
